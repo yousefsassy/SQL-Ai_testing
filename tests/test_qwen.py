@@ -30,16 +30,13 @@ def call_qwen(prompt):
 
     generated_text = response["message"]["content"]
 
-    input_tokens = response.get("prompt_eval_count", 0)
-    output_tokens = response.get("eval_count", 0)
+    input_tokens = response.prompt_eval_count or 0
+    output_tokens = response.eval_count or 0
 
-    eval_duration_ns = response.get("eval_duration", 0)
+    eval_duration_ns = response.eval_duration or 0
 
     if eval_duration_ns > 0:
-        tokens_per_second = (
-            output_tokens /
-            (eval_duration_ns / 1_000_000_000)
-        )
+        tokens_per_second = output_tokens / (eval_duration_ns / 1_000_000_000)
     else:
         tokens_per_second = 0
 

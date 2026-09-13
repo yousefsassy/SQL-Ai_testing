@@ -1,0 +1,2 @@
+model,correct,total,accuracy,p50_latency_ms,p95_latency_ms,avg_tokens_per_second
+qwen3:8b,5,10,0.5,652.75,1364.82,60.1
