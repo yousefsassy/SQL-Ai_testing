@@ -1,0 +1,50 @@
+Qwen3 8B Local Model Hardware Note
+==================================
+
+Model:
+qwen3:8b
+
+Runtime:
+Ollama
+
+Operating System:
+Microsoft Windows 11 Professionnel
+
+CPU:
+AMD Ryzen 7 5700X 8-Core Processor             
+
+GPU:
+NVIDIA GeForce RTX 3060
+
+RAM:
+31.9 GB
+
+Ollama Version:
+ollama version is 0.34.0
+
+Model Execution:
+NAME        ID              SIZE      PROCESSOR    CONTEXT    UNTIL              
+qwen3:8b    500a1f067a9f    5.6 GB    100% GPU     4096       4 minutes from now
+
+Benchmark Date:
+2026-09-13
+
+Development Benchmark Results
+-----------------------------
+Items: 10
+Correct: 5/10
+Accuracy: 50.00%
+
+p50 Latency:
+652.75 ms
+
+p95 Latency:
+1364.82 ms
+
+Average Generation Speed:
+60.10 tokens/second
+
+Notes:
+This was a development run using the current 10-item dev dataset.
+The final Project 0 benchmark will be rerun using the finalized
+50+ item dataset and the shared prompt used by all three models.

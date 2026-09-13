@@ -1,51 +1,112 @@
-import ollama
+import time
+
+import httpx
+from ollama import Client
 
 
-DEFAULT_MODEL = "gemma3:1b"
-
-OPTIONS = {
-    "temperature": 0,
-    "top_p": 1.0,
-    "top_k": 40,
-    "num_predict": 256,
-    "num_ctx": 4096,
-    "seed": 42,
-    "repeat_penalty": 1.0
-}
+SUPPORTED_MODELS = ("gemma3:1b", "llama3.2:3b", "phi4-mini", "qwen3:8b")
+MAX_OUTPUT_TOKENS = 256
+TIMEOUT_SECONDS = 60
 
 
-def build_prompt(schema, question):
-    return f"""
-You are a SQL generation system.
-
-Given the database schema and a question, generate the SQLite query
-that answers the question.
-
-Rules:
-- Use SQLite syntax.
-- Return only the SQL query.
-- Do not include explanations.
-- Do not use Markdown.
-- Generate exactly one query.
-- Only use tables and columns present in the schema.
-
-Schema:
-{schema}
-
-Question:
-{question}
-
-SQL:
-""".strip()
+client = Client(
+    host="http://localhost:11434",
+    timeout=TIMEOUT_SECONDS
+)
 
 
-def generate_sql(question, schema, model=DEFAULT_MODEL):
-    prompt = build_prompt(schema, question)
+def call_model(prompt, model):
+    if model not in SUPPORTED_MODELS:
+        raise ValueError(f"Unsupported model: {model}")
 
-    response = ollama.generate(
-        model=model,
-        prompt=prompt,
-        options=OPTIONS
+    start_time = time.perf_counter()
+
+    try:
+        response = client.chat(
+            model=model,
+            messages=[
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ],
+            options={
+                "temperature": 0,
+                "num_predict": MAX_OUTPUT_TOKENS
+            },
+            **({"think": False} if model == "qwen3:8b" else {})
+        )
+
+    except httpx.TimeoutException as e:
+        latency_ms = (
+            time.perf_counter() - start_time
+        ) * 1000
+
+        return {
+            "status": "timeout",
+            "text": "",
+            "latency_ms": latency_ms,
+            "input_tokens": 0,
+            "output_tokens": 0,
+            "tokens_per_second": 0,
+            "error": str(e)
+        }
+
+    except Exception as e:
+        latency_ms = (
+            time.perf_counter() - start_time
+        ) * 1000
+
+        return {
+            "status": "model_error",
+            "text": "",
+            "latency_ms": latency_ms,
+            "input_tokens": 0,
+            "output_tokens": 0,
+            "tokens_per_second": 0,
+            "error": str(e)
+        }
+
+    latency_ms = (
+        time.perf_counter() - start_time
+    ) * 1000
+
+    generated_text = response["message"]["content"]
+
+    input_tokens = response.get(
+        "prompt_eval_count",
+        0
     )
 
-    return response["response"].strip()
+    output_tokens = response.get(
+        "eval_count",
+        0
+    )
+
+    eval_duration_ns = response.get(
+        "eval_duration",
+        0
+    )
+
+    if eval_duration_ns > 0:
+        tokens_per_second = (
+            output_tokens /
+            (eval_duration_ns / 1_000_000_000)
+        )
+    else:
+        tokens_per_second = 0
+
+    return {
+        "status": "ok",
+        "text": generated_text,
+        "latency_ms": latency_ms,
+        "input_tokens": input_tokens,
+        "output_tokens": output_tokens,
+        "tokens_per_second": tokens_per_second,
+        "error": None
+    }
+
+
+def call_qwen(prompt):
+    """Compatibility helper for the original Qwen runner."""
+    return call_model(prompt, "qwen3:8b")
