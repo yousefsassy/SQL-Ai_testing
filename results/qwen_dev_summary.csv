@@ -1,2 +1,0 @@
-model,split,correct,total,accuracy,p50_latency_ms,p95_latency_ms,avg_tokens_per_second,benchmark_seconds,requests_per_hour,hardware_cost_per_hour,local_cost_per_1000
-qwen3:8b,dev,4,10,0.4,739.34,2224.48,60.01,9.41,3825.5,,

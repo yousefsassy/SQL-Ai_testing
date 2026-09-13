@@ -1,0 +1,195 @@
+model,item_id,split,difficulty,question,raw_output,generated_sql,correct,status,latency_ms,input_tokens,output_tokens,tokens_per_second,error
+gemma3:1b,1,dev,easy,Count the customers whose country is France. Return exactly one column: the customer count.,"```sqlite
+SELECT count(*) FROM customers WHERE country = 'France'
+```",SELECT count(*) FROM customers WHERE country = 'France';,True,correct,3159.56,330,17,111.01,
+gemma3:1b,2,dev,easy,List all products in the Electronics category. Return exactly one column: the product name. No particular row order is required.,"SELECT name FROM products WHERE category = 'Electronics'
+",SELECT name FROM products WHERE category = 'Electronics';,True,correct,587.14,337,12,114.35,
+gemma3:1b,3,dev,easy,"Count the orders placed from January 1, 2025 through December 31, 2025, inclusive. Return exactly one column: the order count.","```sqlite
+SELECT COUNT(*) FROM orders WHERE order_date BETWEEN '2025-01-01' AND '2025-12-31'
+```",SELECT COUNT(*) FROM orders WHERE order_date BETWEEN '2025-01-01' AND '2025-12-31';,True,correct,927.62,350,41,108.73,
+gemma3:1b,4,dev,medium,"For each product with at least one order, calculate the total quantity sold across all its orders. Treat each product ID as a separate product. Return exactly two columns, in this order: product name, total quantity sold. No particular row order is required.","```sqlite
+SELECT p.name, SUM(o.quantity) FROM products p JOIN orders o ON p.id = o.product_id GROUP BY p.id
+```","SELECT p.name, SUM(o.quantity) FROM products p JOIN orders o ON p.id = o.product_id GROUP BY p.id;",True,correct,900.56,364,38,108.66,
+gemma3:1b,5,dev,medium,"Find the single customer who placed the most orders, counting each orders row as one order. Treat each customer ID as a separate customer. If customers tie, choose the customer with the smallest customer ID. Return exactly two columns, in this order: customer name, number of orders.","```sqlite
+SELECT
+    c.name,
+    COUNT(o.id)
+FROM
+    customers c
+JOIN
+    orders o ON c.id = o.customer_id
+GROUP BY
+    c.id
+ORDER BY
+    COUNT(o.id) DESC
+LIMIT 1
+```","SELECT
+    c.name,
+    COUNT(o.id)
+FROM
+    customers c
+JOIN
+    orders o ON c.id = o.customer_id
+GROUP BY
+    c.id
+ORDER BY
+    COUNT(o.id) DESC
+LIMIT 1;",False,wrong_result,1167.38,369,67,108.47,
+gemma3:1b,6,dev,medium,"For each product with at least one order, calculate its total revenue across all its orders, using product price multiplied by order quantity. Treat each product ID as a separate product. Return exactly two columns, in this order: product name, total revenue. Do not round the revenue. No particular row order is required.","SELECT p.name, SUM(p.price * o.quantity) FROM products p JOIN orders o ON p.id = o.product_id GROUP BY p.id
+","SELECT p.name, SUM(p.price * o.quantity) FROM products p JOIN orders o ON p.id = o.product_id GROUP BY p.id;",True,correct,899.12,376,38,109.08,
+gemma3:1b,7,dev,hard,"Find the single customer with the highest total spending across all their orders, using product price multiplied by order quantity. Treat each customer ID as a separate customer. If customers tie, choose the customer with the smallest customer ID. Return exactly two columns, in this order: customer name, total spending. Do not round the spending.","```sqlite
+SELECT c.name, c.total_spending FROM customers c JOIN orders o ON c.id = o.customer_id WHERE o.product_id = o.product_id ORDER BY c.total_spending DESC LIMIT 1
+```","SELECT c.name, c.total_spending FROM customers c JOIN orders o ON c.id = o.customer_id WHERE o.product_id = o.product_id ORDER BY c.total_spending DESC LIMIT 1;",False,execution_error,1057.51,378,55,108.54,no such column: c.total_spending
+gemma3:1b,8,dev,hard,"Find the single product category with the highest total revenue across all orders, using product price multiplied by order quantity. If categories tie, choose the category whose name comes first in ascending alphabetical order. Return exactly two columns, in this order: category name, total revenue. Do not round the revenue.","```sqlite
+SELECT ""category"" FROM ""products"" ORDER BY ""price"" DESC LIMIT 1
+```","SELECT ""category"" FROM ""products"" ORDER BY ""price"" DESC LIMIT 1;",False,wrong_result,759.61,372,23,110.45,
+gemma3:1b,9,dev,hard,"Calculate each customer's total spending across all their orders, using product price multiplied by order quantity. Treat each customer ID as a separate customer. Among customers with at least one order, find those whose total spending is strictly greater than the average of these customer totals. Exclude customers with no orders from the average. Return exactly two columns, in this order: customer name, total spending. Do not round the spending. No particular row order is required.","```sqlite
+SELECT c.name, SUM(p.price * o.quantity) FROM customers c JOIN orders o ON c.id = o.customer_id GROUP BY c.id
+```","SELECT c.name, SUM(p.price * o.quantity) FROM customers c JOIN orders o ON c.id = o.customer_id GROUP BY c.id;",False,execution_error,1017.78,404,42,108.28,no such column: p.price
+gemma3:1b,10,dev,hard,"Find the single product ordered by the largest number of distinct customers, identifying products by product ID and customers by customer ID. Count a customer only once per product, even if they ordered it multiple times. If products tie, choose the product with the smallest product ID. Return exactly two columns, in this order: product name, distinct customer count.","```sqlite
+SELECT p.name, COUNT(DISTINCT c.id) FROM products p, orders c WHERE p.product_id = c.product_id AND c.customer_id = p.customer_id GROUP BY p.name, c.id
+```","SELECT p.name, COUNT(DISTINCT c.id) FROM products p, orders c WHERE p.product_id = c.product_id AND c.customer_id = p.customer_id GROUP BY p.name, c.id;",False,execution_error,1090.89,382,58,108.0,no such column: p.product_id
+phi4-mini,1,dev,easy,Count the customers whose country is France. Return exactly one column: the customer count.,"```sql
+SELECT COUNT(*) AS customer_count
+FROM customers
+WHERE country = 'France';
+```","SELECT COUNT(*) AS customer_count
+FROM customers
+WHERE country = 'France';",True,correct,17807.23,279,21,33.01,
+phi4-mini,2,dev,easy,List all products in the Electronics category. Return exactly one column: the product name. No particular row order is required.,"```sql
+SELECT name FROM products WHERE category = 'Electronics';
+```",SELECT name FROM products WHERE category = 'Electronics';,True,correct,762.61,286,16,33.52,
+phi4-mini,3,dev,easy,"Count the orders placed from January 1, 2025 through December 31, 2025, inclusive. Return exactly one column: the order count.","```sql
+SELECT COUNT(*) AS order_count
+FROM orders
+WHERE order_date BETWEEN '2025-01-01' AND '2025-12-31';
+```","SELECT COUNT(*) AS order_count
+FROM orders
+WHERE order_date BETWEEN '2025-01-01' AND '2025-12-31';",True,correct,1474.39,294,36,30.27,
+phi4-mini,4,dev,medium,"For each product with at least one order, calculate the total quantity sold across all its orders. Treat each product ID as a separate product. Return exactly two columns, in this order: product name, total quantity sold. No particular row order is required.","```sql
+SELECT p.name, SUM(o.quantity) AS total_quantity_sold
+FROM products p
+JOIN orders o ON p.id = o.product_id
+GROUP BY p.id, p.name
+```","SELECT p.name, SUM(o.quantity) AS total_quantity_sold
+FROM products p
+JOIN orders o ON p.id = o.product_id
+GROUP BY p.id, p.name;",True,correct,1732.28,313,42,32.14,
+phi4-mini,5,dev,medium,"Find the single customer who placed the most orders, counting each orders row as one order. Treat each customer ID as a separate customer. If customers tie, choose the customer with the smallest customer ID. Return exactly two columns, in this order: customer name, number of orders.","```sql
+SELECT c.name, COUNT(o.id) AS order_count
+FROM customers c
+JOIN orders o ON c.id = o.customer_id
+GROUP BY c.id
+ORDER BY order_count DESC, c.id
+LIMIT 1;
+```","SELECT c.name, COUNT(o.id) AS order_count
+FROM customers c
+JOIN orders o ON c.id = o.customer_id
+GROUP BY c.id
+ORDER BY order_count DESC, c.id
+LIMIT 1;",True,correct,1983.02,318,50,32.02,
+phi4-mini,6,dev,medium,"For each product with at least one order, calculate its total revenue across all its orders, using product price multiplied by order quantity. Treat each product ID as a separate product. Return exactly two columns, in this order: product name, total revenue. Do not round the revenue. No particular row order is required.","```sql
+SELECT p.name, SUM(p.price * o.quantity) AS total_revenue
+FROM products p
+JOIN orders o ON p.id = o.product_id
+GROUP BY p.id, p.name
+```","SELECT p.name, SUM(p.price * o.quantity) AS total_revenue
+FROM products p
+JOIN orders o ON p.id = o.product_id
+GROUP BY p.id, p.name;",True,correct,1894.01,325,44,31.92,
+phi4-mini,7,dev,hard,"Find the single customer with the highest total spending across all their orders, using product price multiplied by order quantity. Treat each customer ID as a separate customer. If customers tie, choose the customer with the smallest customer ID. Return exactly two columns, in this order: customer name, total spending. Do not round the spending.","```sql
+SELECT c.name, SUM(p.price * o.quantity) AS total_spending
+FROM customers c
+JOIN orders o ON c.id = o.customer_id
+JOIN products p ON o.product_id = p.id
+GROUP BY c.id
+ORDER BY total_spending DESC, c.id
+LIMIT 1;
+```","SELECT c.name, SUM(p.price * o.quantity) AS total_spending
+FROM customers c
+JOIN orders o ON c.id = o.customer_id
+JOIN products p ON o.product_id = p.id
+GROUP BY c.id
+ORDER BY total_spending DESC, c.id
+LIMIT 1;",True,correct,2595.75,327,66,31.74,
+phi4-mini,8,dev,hard,"Find the single product category with the highest total revenue across all orders, using product price multiplied by order quantity. If categories tie, choose the category whose name comes first in ascending alphabetical order. Return exactly two columns, in this order: category name, total revenue. Do not round the revenue.","```sql
+SELECT category, SUM(price * quantity) AS total_revenue
+FROM products
+JOIN orders ON products.id = orders.product_id
+GROUP BY category
+ORDER BY category ASC, total_revenue DESC
+LIMIT 1;
+```","SELECT category, SUM(price * quantity) AS total_revenue
+FROM products
+JOIN orders ON products.id = orders.product_id
+GROUP BY category
+ORDER BY category ASC, total_revenue DESC
+LIMIT 1;",False,wrong_result,2032.24,321,49,30.49,
+phi4-mini,9,dev,hard,"Calculate each customer's total spending across all their orders, using product price multiplied by order quantity. Treat each customer ID as a separate customer. Among customers with at least one order, find those whose total spending is strictly greater than the average of these customer totals. Exclude customers with no orders from the average. Return exactly two columns, in this order: customer name, total spending. Do not round the spending. No particular row order is required.","```sql
+SELECT c.name, SUM(p.price * o.quantity) AS total_spending
+FROM customers c
+JOIN orders o ON c.id = o.customer_id
+JOIN products p ON o.product_id = p.id
+GROUP BY c.id
+HAVING SUM(p.price * o.quantity) > (
+    SELECT AVG(total_spending)
+    FROM (
+        SELECT SUM(p.price * o.quantity) AS total_spending
+        FROM customers c
+        JOIN orders o ON c.id = o.customer_id
+        JOIN products p ON o.product_id = p.id
+        GROUP BY c.id
+    ) AS subquery
+)
+ORDER BY total_spending DESC;
+```","SELECT c.name, SUM(p.price * o.quantity) AS total_spending
+FROM customers c
+JOIN orders o ON c.id = o.customer_id
+JOIN products p ON o.product_id = p.id
+GROUP BY c.id
+HAVING SUM(p.price * o.quantity) > (
+    SELECT AVG(total_spending)
+    FROM (
+        SELECT SUM(p.price * o.quantity) AS total_spending
+        FROM customers c
+        JOIN orders o ON c.id = o.customer_id
+        JOIN products p ON o.product_id = p.id
+        GROUP BY c.id
+    ) AS subquery
+)
+ORDER BY total_spending DESC;",True,correct,5048.18,351,136,30.63,
+phi4-mini,10,dev,hard,"Find the single product ordered by the largest number of distinct customers, identifying products by product ID and customers by customer ID. Count a customer only once per product, even if they ordered it multiple times. If products tie, choose the product with the smallest product ID. Return exactly two columns, in this order: product name, distinct customer count.","```sql
+SELECT p.name, COUNT(DISTINCT o.customer_id) AS distinct_customer_count
+FROM orders o
+JOIN products p ON o.product_id = p.id
+GROUP BY p.id
+ORDER BY distinct_customer_count DESC, p.id
+LIMIT 1;
+```","SELECT p.name, COUNT(DISTINCT o.customer_id) AS distinct_customer_count
+FROM orders o
+JOIN products p ON o.product_id = p.id
+GROUP BY p.id
+ORDER BY distinct_customer_count DESC, p.id
+LIMIT 1;",True,correct,2275.92,331,56,31.82,
+llama3.2:3b,1,dev,easy,Count the customers whose country is France. Return exactly one column: the customer count.,SELECT COUNT(*) FROM customers WHERE country = 'France',SELECT COUNT(*) FROM customers WHERE country = 'France';,True,correct,7183.68,302,12,60.27,
+llama3.2:3b,2,dev,easy,List all products in the Electronics category. Return exactly one column: the product name. No particular row order is required.,SELECT name FROM products WHERE category = 'Electronics',SELECT name FROM products WHERE category = 'Electronics';,True,correct,383.77,309,12,60.68,
+llama3.2:3b,3,dev,easy,"Count the orders placed from January 1, 2025 through December 31, 2025, inclusive. Return exactly one column: the order count.",SELECT COUNT(*) FROM orders WHERE order_date BETWEEN '2025-01-01' AND '2025-12-31',SELECT COUNT(*) FROM orders WHERE order_date BETWEEN '2025-01-01' AND '2025-12-31';,True,correct,693.98,317,27,57.54,
+llama3.2:3b,4,dev,medium,"For each product with at least one order, calculate the total quantity sold across all its orders. Treat each product ID as a separate product. Return exactly two columns, in this order: product name, total quantity sold. No particular row order is required.","SELECT T1.name, SUM(T2.quantity) FROM products AS T1 LEFT JOIN orders AS T2 ON T1.id = T2.product_id GROUP BY T1.id","SELECT T1.name, SUM(T2.quantity) FROM products AS T1 LEFT JOIN orders AS T2 ON T1.id = T2.product_id GROUP BY T1.id;",True,correct,973.48,336,36,56.8,
+llama3.2:3b,5,dev,medium,"Find the single customer who placed the most orders, counting each orders row as one order. Treat each customer ID as a separate customer. If customers tie, choose the customer with the smallest customer ID. Return exactly two columns, in this order: customer name, number of orders.","SELECT name, COUNT(*) FROM customers JOIN orders ON customers.id = orders.customer_id GROUP BY customers.id ORDER BY COUNT(*) DESC, id LIMIT 1","SELECT name, COUNT(*) FROM customers JOIN orders ON customers.id = orders.customer_id GROUP BY customers.id ORDER BY COUNT(*) DESC, id LIMIT 1;",False,execution_error,887.25,341,31,56.95,ambiguous column name: id
+llama3.2:3b,6,dev,medium,"For each product with at least one order, calculate its total revenue across all its orders, using product price multiplied by order quantity. Treat each product ID as a separate product. Return exactly two columns, in this order: product name, total revenue. Do not round the revenue. No particular row order is required.","SELECT T1.name, SUM(T2.price * T2.quantity) FROM products AS T1 INNER JOIN orders AS T2 ON T1.id = T2.product_id GROUP BY T1.name","SELECT T1.name, SUM(T2.price * T2.quantity) FROM products AS T1 INNER JOIN orders AS T2 ON T1.id = T2.product_id GROUP BY T1.name;",False,execution_error,1129.67,348,40,56.67,no such column: T2.price
+llama3.2:3b,7,dev,hard,"Find the single customer with the highest total spending across all their orders, using product price multiplied by order quantity. Treat each customer ID as a separate customer. If customers tie, choose the customer with the smallest customer ID. Return exactly two columns, in this order: customer name, total spending. Do not round the spending.","SELECT name, SUM(p.price * o.quantity) FROM customers c JOIN orders o ON c.id = o.customer_id JOIN products p ON o.product_id = p.id GROUP BY c.id ORDER BY SUM(p.price * o.quantity) DESC LIMIT 1","SELECT name, SUM(p.price * o.quantity) FROM customers c JOIN orders o ON c.id = o.customer_id JOIN products p ON o.product_id = p.id GROUP BY c.id ORDER BY SUM(p.price * o.quantity) DESC LIMIT 1;",False,execution_error,1330.73,350,51,56.26,ambiguous column name: name
+llama3.2:3b,8,dev,hard,"Find the single product category with the highest total revenue across all orders, using product price multiplied by order quantity. If categories tie, choose the category whose name comes first in ascending alphabetical order. Return exactly two columns, in this order: category name, total revenue. Do not round the revenue.","SELECT T1.category, SUM(T2.price * T2.quantity) FROM products AS T1 INNER JOIN orders AS T2 ON T1.id = T2.product_id GROUP BY T1.category ORDER BY SUM(T2.price * T2.quantity) DESC, T1.category","SELECT T1.category, SUM(T2.price * T2.quantity) FROM products AS T1 INNER JOIN orders AS T2 ON T1.id = T2.product_id GROUP BY T1.category ORDER BY SUM(T2.price * T2.quantity) DESC, T1.category;",False,execution_error,1343.23,344,56,56.12,no such column: T2.price
+llama3.2:3b,9,dev,hard,"Calculate each customer's total spending across all their orders, using product price multiplied by order quantity. Treat each customer ID as a separate customer. Among customers with at least one order, find those whose total spending is strictly greater than the average of these customer totals. Exclude customers with no orders from the average. Return exactly two columns, in this order: customer name, total spending. Do not round the spending. No particular row order is required.","SELECT c.name, SUM(p.price * o.quantity) 
+FROM customers c 
+JOIN orders o ON c.id = o.customer_id 
+JOIN products p ON o.product_id = p.id 
+GROUP BY c.name 
+HAVING COUNT(o.id) > 0 
+ORDER BY SUM(p.price * o.quantity) DESC","SELECT c.name, SUM(p.price * o.quantity) 
+FROM customers c 
+JOIN orders o ON c.id = o.customer_id 
+JOIN products p ON o.product_id = p.id 
+GROUP BY c.name 
+HAVING COUNT(o.id) > 0 
+ORDER BY SUM(p.price * o.quantity) DESC;",False,wrong_result,1646.83,374,64,55.96,
+llama3.2:3b,10,dev,hard,"Find the single product ordered by the largest number of distinct customers, identifying products by product ID and customers by customer ID. Count a customer only once per product, even if they ordered it multiple times. If products tie, choose the product with the smallest product ID. Return exactly two columns, in this order: product name, distinct customer count.","SELECT T1.name, COUNT(DISTINCT T2.customer_id) FROM products AS T1 INNER JOIN orders AS T2 ON T1.id = T2.product_id GROUP BY T1.id ORDER BY COUNT(DISTINCT T2.customer_id) DESC, T1.id","SELECT T1.name, COUNT(DISTINCT T2.customer_id) FROM products AS T1 INNER JOIN orders AS T2 ON T1.id = T2.product_id GROUP BY T1.id ORDER BY COUNT(DISTINCT T2.customer_id) DESC, T1.id;",False,wrong_result,1421.37,354,56,56.08,

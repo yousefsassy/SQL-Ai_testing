@@ -36,9 +36,9 @@ def parse_sql(raw_output):
             "error": "Model refused the request"
         }
 
-    # Remove Markdown code fences if model ignored prompt
+    # Apply the same fence normalization to every model response.
     fence_match = re.fullmatch(
-        r"```(?:sql)?\s*(.*?)\s*```",
+        r"```(?:sqlite|sql)?\s*(.*?)\s*```",
         text,
         flags=re.IGNORECASE | re.DOTALL
     )

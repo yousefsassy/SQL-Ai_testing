@@ -4,7 +4,7 @@ import httpx
 from ollama import Client
 
 
-QWEN_MODEL = "qwen3:8b"
+SUPPORTED_MODELS = ("gemma3:1b", "llama3.2:3b", "phi4-mini", "qwen3:8b")
 MAX_OUTPUT_TOKENS = 256
 TIMEOUT_SECONDS = 60
 
@@ -15,12 +15,15 @@ client = Client(
 )
 
 
-def call_qwen(prompt):
+def call_model(prompt, model):
+    if model not in SUPPORTED_MODELS:
+        raise ValueError(f"Unsupported model: {model}")
+
     start_time = time.perf_counter()
 
     try:
         response = client.chat(
-            model=QWEN_MODEL,
+            model=model,
             messages=[
                 {
                     "role": "user",
@@ -31,7 +34,7 @@ def call_qwen(prompt):
                 "temperature": 0,
                 "num_predict": MAX_OUTPUT_TOKENS
             },
-            think=False
+            **({"think": False} if model == "qwen3:8b" else {})
         )
 
     except httpx.TimeoutException as e:
@@ -102,3 +105,8 @@ def call_qwen(prompt):
         "tokens_per_second": tokens_per_second,
         "error": None
     }
+
+
+def call_qwen(prompt):
+    """Compatibility helper for the original Qwen runner."""
+    return call_model(prompt, "qwen3:8b")

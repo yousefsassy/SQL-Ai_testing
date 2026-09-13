@@ -2,21 +2,27 @@ import argparse
 import csv
 import json
 import time
+import sys
 from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+# Support both python scripts/run_benchmark.py and python -m scripts.run_benchmark.
+if __package__ in (None, ""):
+    sys.path.insert(0, str(PROJECT_ROOT))
 
 import numpy as np
 
 from src.cost import calculate_local_cost_per_1000
-from src.models import call_qwen
+from src.models import SUPPORTED_MODELS, call_model
 from src.parser import parse_sql
 from src.prompt import build_prompt
 from src.score import score_sql
 
 
-DB_PATH = "data/database/shop.db"
-ITEMS_PATH = "data/database/items.jsonl"
+DB_PATH = PROJECT_ROOT / "data/database/shop.db"
+ITEMS_PATH = PROJECT_ROOT / "data/database/items.jsonl"
 
-RESULTS_DIR = Path("results")
+RESULTS_DIR = PROJECT_ROOT / "results"
 
 
 def load_items(split):
@@ -52,9 +58,30 @@ def load_items(split):
     return items
 
 
+def save_model_results(path, rows, model, split):
+    """Keep the latest run per model/split without dropping other models."""
+    existing = []
+    if path.exists():
+        with path.open(newline="", encoding="utf-8") as file:
+            reader = csv.DictReader(file)
+            if reader.fieldnames != list(rows[0]):
+                raise ValueError(f"Unexpected CSV columns in {path}")
+            existing = [
+                row for row in reader
+                if (row["model"], row["split"]) != (model, split)
+            ]
+    temporary_path = path.with_suffix(".csv.tmp")
+    with temporary_path.open("w", newline="", encoding="utf-8") as file:
+        writer = csv.DictWriter(file, fieldnames=rows[0].keys())
+        writer.writeheader()
+        writer.writerows(existing + rows)
+    temporary_path.replace(path)
+
+
 def main():
 
     argument_parser = argparse.ArgumentParser()
+    argument_parser.add_argument("--model", choices=SUPPORTED_MODELS, required=True)
 
     argument_parser.add_argument(
         "--split",
@@ -80,15 +107,8 @@ def main():
 
     RESULTS_DIR.mkdir(exist_ok=True)
 
-    per_item_path = (
-        RESULTS_DIR /
-        f"qwen_{args.split}_per_item.csv"
-    )
-
-    summary_path = (
-        RESULTS_DIR /
-        f"qwen_{args.split}_summary.csv"
-    )
+    per_item_path = RESULTS_DIR / "per_item.csv"
+    summary_path = RESULTS_DIR / "summary.csv"
 
     results = []
     correct_count = 0
@@ -102,22 +122,22 @@ def main():
             item["question"]
         )
 
-        qwen_result = call_qwen(prompt)
+        model_result = call_model(prompt, args.model)
 
-        raw_output = qwen_result["text"]
+        raw_output = model_result["text"]
 
         generated_sql = ""
-        error = qwen_result["error"]
+        error = model_result["error"]
 
         # -------------------------------------
         # Model-level failure
         # -------------------------------------
 
-        if qwen_result["status"] != "ok":
+        if model_result["status"] != "ok":
 
             result = {
                 "correct": False,
-                "status": qwen_result["status"]
+                "status": model_result["status"]
             }
 
         else:
@@ -160,7 +180,7 @@ def main():
             correct_count += 1
 
         row = {
-            "model": "qwen3:8b",
+            "model": args.model,
             "item_id": item["id"],
             "split": item["split"],
             "difficulty": item["difficulty"],
@@ -170,15 +190,15 @@ def main():
             "correct": result["correct"],
             "status": result["status"],
             "latency_ms": round(
-                qwen_result["latency_ms"],
+                model_result["latency_ms"],
                 2
             ),
             "input_tokens":
-                qwen_result["input_tokens"],
+                model_result["input_tokens"],
             "output_tokens":
-                qwen_result["output_tokens"],
+                model_result["output_tokens"],
             "tokens_per_second": round(
-                qwen_result[
+                model_result[
                     "tokens_per_second"
                 ],
                 2
@@ -200,12 +220,12 @@ def main():
 
         print(
             f"Latency: "
-            f"{qwen_result['latency_ms']:.2f} ms"
+            f"{model_result['latency_ms']:.2f} ms"
         )
 
         print(
             f"Tokens/sec: "
-            f"{qwen_result['tokens_per_second']:.2f}"
+            f"{model_result['tokens_per_second']:.2f}"
         )
 
     benchmark_seconds = (
@@ -217,20 +237,7 @@ def main():
     # Save per-item results
     # -----------------------------------------
 
-    with open(
-        per_item_path,
-        "w",
-        newline="",
-        encoding="utf-8"
-    ) as file:
-
-        writer = csv.DictWriter(
-            file,
-            fieldnames=results[0].keys()
-        )
-
-        writer.writeheader()
-        writer.writerows(results)
+    save_model_results(per_item_path, results, args.model, args.split)
 
     # -----------------------------------------
     # Statistics
@@ -305,7 +312,7 @@ def main():
     # -----------------------------------------
 
     summary = {
-        "model": "qwen3:8b",
+        "model": args.model,
         "split": args.split,
         "correct": correct_count,
         "total": len(items),
@@ -338,20 +345,7 @@ def main():
             )
     }
 
-    with open(
-        summary_path,
-        "w",
-        newline="",
-        encoding="utf-8"
-    ) as file:
-
-        writer = csv.DictWriter(
-            file,
-            fieldnames=summary.keys()
-        )
-
-        writer.writeheader()
-        writer.writerow(summary)
+    save_model_results(summary_path, [summary], args.model, args.split)
 
     # -----------------------------------------
     # Console output
@@ -359,7 +353,7 @@ def main():
 
     print()
     print("=" * 50)
-    print("QWEN3 8B RESULTS")
+    print(f"{args.model} RESULTS")
     print("=" * 50)
 
     print(
