@@ -1,50 +1,66 @@
-Qwen3 8B Local Model Hardware Note
-==================================
+Final local benchmark hardware — 14 September 2026 (Africa/Tunis)
+================================================================
+All four 50-item final-test benchmarks used this machine.
 
-Model:
-qwen3:8b
+Operating system: EndeavourOS Linux, x86_64
+CPU: Intel Core i7-10870H @ 2.20 GHz; 8 physical cores / 16 threads
+RAM: 16 GB nominal; Linux MemTotal 16,196,008 KiB (15.45 GiB usable)
+GPU: NVIDIA GeForce GTX 1650; 4,096 MiB VRAM (4 GiB)
+NVIDIA driver: 610.43.03
+Ollama: 0.33.3
+Python: 3.14.6
 
-Runtime:
-Ollama
+Installed model tags and IDs (ollama list):
+gemma3:1b       8648f39daa8f
+llama3.2:3b     a80c4f17acd5
+phi4-mini      78fad5d182a7 (resolves to phi4-mini:latest)
+qwen3:8b       500a1f067a9f
 
-Operating System:
-Microsoft Windows 11 Professionnel
+Execution observed in Ollama service logs for the final sessions:
+gemma3:1b:   27/27 layers offloaded to GPU; 4,096-token context
+llama3.2:3b: 29/29 layers offloaded to GPU; 4,096-token context
+phi4-mini:  28/33 layers offloaded to GPU; mixed CPU/GPU; 4,096-token context
+qwen3:8b:   16/37 layers offloaded to GPU; mixed CPU/GPU; 4,096-token context
+These are layer counts, not measured GPU utilization percentages.
+The wrapper does not explicitly set num_ctx; 4,096 was verified in runtime logs.
 
-CPU:
-AMD Ryzen 7 5700X 8-Core Processor             
+Settings and measurement policy:
+Temperature 0; maximum output 256 tokens; 60-second client timeout.
+One model call per item, 50 items per model, sequential execution.
+Shared prompt, parser, SQLite database, and result-comparison scorer.
+Qwen think=False; no thinking option sent to other models.
+No separate warm-up request. Model-call latency includes loading if needed.
+The reported Qwen results are the latest requested rerun, with the model already
+loaded. Both Qwen runs scored 47/50. Other models' final runs were not repeated.
+Consequently loading state was not controlled equally; timing comparisons have
+this limitation. No benchmarks were rerun while creating the report.
+Generation tokens/s uses Ollama generation duration. Requests/hour uses elapsed
+time for the full evaluation loop, including SQL scoring and Python overhead.
 
-GPU:
-NVIDIA GeForce RTX 3060
+Cost assumption: EUR 0.20 per hardware hour, equally for all four models.
+Hardware-only cost/1K = (0.20 / measured requests per hour) * 1000.
+This is an assumed operating-cost scenario, not metered electricity spending.
+Gemma's hourly-rate CSV cell remains blank from its original run; its cost/1K
+cell was subsequently calculated using the same EUR 0.20/hour assumption.
 
-RAM:
-31.9 GB
+Historical development hardware (not used in the final results table):
+A teammate's earlier Qwen dev run used Windows 11 Professional, AMD Ryzen 7
+5700X, NVIDIA RTX 3060, 31.9 GB RAM, Ollama 0.34.0, and full GPU execution.
+Those old development measurements are not combined with the current results.
 
-Ollama Version:
-ollama version is 0.34.0
+Verification sources: lscpu, /proc/meminfo, nvidia-smi, /etc/os-release,
+ollama --version, ollama list, and journalctl -u ollama.
 
-Model Execution:
-NAME        ID              SIZE      PROCESSOR    CONTEXT    UNTIL              
-qwen3:8b    500a1f067a9f    5.6 GB    100% GPU     4096       4 minutes from now
-
-Benchmark Date:
-2026-09-13
-
-Development Benchmark Results
------------------------------
-Items: 10
-Correct: 5/10
-Accuracy: 50.00%
-
-p50 Latency:
-652.75 ms
-
-p95 Latency:
-1364.82 ms
-
-Average Generation Speed:
-60.10 tokens/second
-
-Notes:
-This was a development run using the current 10-item dev dataset.
-The final Project 0 benchmark will be rerun using the finalized
-50+ item dataset and the shared prompt used by all three models.
+Runtime log excerpts (local timestamps):
+2026-09-14T01:17:33+01:00 asma-vivobookasuslaptopx571lhf571lh ollama[1145]: time=2026-09-14T01:17:33.528+01:00 level=INFO source=llama_server.go:433 msg="starting llama-server" cmd="/usr/local/lib/ollama/llama-server --model /usr/share/ollama/.ollama/models/blobs/sha256-7cd4618c1faf8b7233c6c906dac1694b6a47684b37b8895d470ac688520b9c01 --port 32865 --host 127.0.0.1 --no-webui --offline -c 4096 -np 1 --log-verbosity 4 --no-log-prefix --no-log-timestamps --no-jinja --chat-template chatml --flash-attn auto -b 512 -ub 512 --context-shift --keep 4"
+2026-09-14T01:17:34+01:00 asma-vivobookasuslaptopx571lhf571lh ollama[1145]: load_tensors: offloaded 27/27 layers to GPU
+2026-09-14T01:17:34+01:00 asma-vivobookasuslaptopx571lhf571lh ollama[1145]: llama_context: n_ctx                 = 4096
+2026-09-14T01:24:50+01:00 asma-vivobookasuslaptopx571lhf571lh ollama[1145]: time=2026-09-14T01:24:50.865+01:00 level=INFO source=llama_server.go:433 msg="starting llama-server" cmd="/usr/local/lib/ollama/llama-server --model /usr/share/ollama/.ollama/models/blobs/sha256-dde5aa3fc5ffc17176b5e8bdc82f587b24b2678c6c66101bf7da77af9f7ccdff --port 35199 --host 127.0.0.1 --no-webui --offline -c 4096 -np 1 --log-verbosity 4 --no-log-prefix --no-log-timestamps --no-jinja --chat-template chatml --load-mode none --flash-attn auto -b 512 -ub 512 --context-shift --keep 4"
+2026-09-14T01:24:52+01:00 asma-vivobookasuslaptopx571lhf571lh ollama[1145]: load_tensors: offloaded 29/29 layers to GPU
+2026-09-14T01:24:53+01:00 asma-vivobookasuslaptopx571lhf571lh ollama[1145]: llama_context: n_ctx                 = 4096
+2026-09-14T01:30:03+01:00 asma-vivobookasuslaptopx571lhf571lh ollama[1145]: time=2026-09-14T01:30:03.298+01:00 level=INFO source=llama_server.go:433 msg="starting llama-server" cmd="/usr/local/lib/ollama/llama-server --model /usr/share/ollama/.ollama/models/blobs/sha256-3c168af1dea0a414299c7d9077e100ac763370e5a98b3c53801a958a47f0a5db --port 45921 --host 127.0.0.1 --no-webui --offline -c 4096 -np 1 --log-verbosity 4 --no-log-prefix --no-log-timestamps --no-jinja --chat-template chatml --load-mode none --flash-attn auto -b 512 -ub 512 --context-shift --keep 4"
+2026-09-14T01:30:05+01:00 asma-vivobookasuslaptopx571lhf571lh ollama[1145]: load_tensors: offloaded 28/33 layers to GPU
+2026-09-14T01:30:08+01:00 asma-vivobookasuslaptopx571lhf571lh ollama[1145]: llama_context: n_ctx                 = 4096
+2026-09-14T01:33:12+01:00 asma-vivobookasuslaptopx571lhf571lh ollama[1145]: time=2026-09-14T01:33:12.631+01:00 level=INFO source=llama_server.go:433 msg="starting llama-server" cmd="/usr/local/lib/ollama/llama-server --model /usr/share/ollama/.ollama/models/blobs/sha256-a3de86cd1c132c822487ededd47a324c50491393e6565cd14bafa40d0b8e686f --port 35357 --host 127.0.0.1 --no-webui --offline -c 4096 -np 1 --log-verbosity 4 --no-log-prefix --no-log-timestamps --no-jinja --chat-template chatml --flash-attn auto -b 512 -ub 512 --context-shift --keep 4"
+2026-09-14T01:33:17+01:00 asma-vivobookasuslaptopx571lhf571lh ollama[1145]: load_tensors: offloaded 16/37 layers to GPU
+2026-09-14T01:33:17+01:00 asma-vivobookasuslaptopx571lhf571lh ollama[1145]: llama_context: n_ctx                 = 4096

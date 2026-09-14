@@ -1,18 +1,27 @@
 # SQL-Ai_testing
 
-Evaluate four local Ollama models on natural-language questions about a SQLite ecommerce database. The current dataset contains 10 development items.
+A CS496 AI Engineering benchmark comparing four local Ollama models on ecommerce text-to-SQL. Each generated query and its reference query are executed against the same SQLite database.
 
 ## Setup
 
-With Python and Ollama installed, create a Python environment and install dependencies from the repository root:
+Install Python and Ollama first. Run all commands below from the repository root.
+
+Create and activate a Python environment (Linux/macOS):
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate
+```
+
+On Windows PowerShell, use `.venv\Scripts\Activate.ps1` for activation instead.
+
+Install the project's dependencies:
+
+```bash
 python -m pip install -r requirements.txt
 ```
 
-On Windows, activate the environment with `.venv\Scripts\Activate.ps1` in PowerShell. Ensure Ollama is running and download the models you want to evaluate:
+Ensure Ollama is running locally at `http://localhost:11434`; if it is not already running as a service or desktop application, start `ollama serve` in another terminal. Download the model you want to test, or all four:
 
 ```bash
 ollama pull gemma3:1b
@@ -21,11 +30,23 @@ ollama pull phi4-mini
 ollama pull qwen3:8b
 ```
 
-The repository includes `data/database/shop.db`. Running `python scripts/create_database.py` deletes and recreates that database with seeded sample data.
+Generate the local shop database:
 
-## Run
+```bash
+python scripts/create_database.py
+```
 
-From the repository root, run any model with the same runner:
+This recreates `data/database/shop.db`, replacing an existing database, with seed 42: 300 customers, 20 products, and 1,200 orders. A generated database is already included in the repository.
+
+## Run a final benchmark
+
+One run command for the selected model:
+
+```bash
+python scripts/run_benchmark.py --model phi4-mini
+```
+
+To evaluate each of the four models, run these commands sequentially:
 
 ```bash
 python scripts/run_benchmark.py --model gemma3:1b
@@ -34,27 +55,29 @@ python scripts/run_benchmark.py --model phi4-mini
 python scripts/run_benchmark.py --model qwen3:8b
 ```
 
-`python -m scripts.run_benchmark --model gemma3:1b` also works. The default is `--split dev`, using the current 10 questions. `--split test` requires at least 50 test items, which are not present yet.
 
-All models share the prompt, parser, scorer, temperature 0, and 256-token output limit. Qwen's thinking is disabled; the other models receive no thinking option. Requests use the local Ollama server at `http://localhost:11434` with a 60-second client timeout.
+The default split is `test` (50 items). Add `--split dev` to run the 10 development items for debugging.
 
-## Results
 
-- `results/per_item.csv`: one row per question, including model, split, SQL, correctness, latency, token counts, and errors.
-- `results/summary.csv`: one summary row per model and split.
 
-Each completed run replaces that model/split's previous rows and preserves other models and splits. Run benchmarks sequentially, not concurrently. These files contain the latest runs, not a historical archive; rerun all models after changing the dataset or prompt for a fair comparison. Hardware notes are stored in `results/hardware.txt`; the existing note describes a historical Qwen run on Windows, not the current machine.
+## Final test results
 
-Latency includes the full model request, including any model loading. Generation tokens/second uses Ollama's generation duration. Record hardware separately for each comparison. Cost remains blank unless `--hardware-cost-per-hour` is supplied; `--human-cost-per-1000` defaults to zero.
+These values come from `split=test` in [summary.csv](results/summary.csv). They are the recorded results on our machine, not guaranteed timings on other hardware.
 
-Use the shared runner above for all four models.
+| Model | Correct/50 (%) | p50 ms | p95 ms | Tokens/s | Requests/hour | Hardware €/1K |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `gemma3:1b` | 21/50 (42%) | 898.73 | 1,273.66 | 108.10 | 3,833.13 | 0.0522 |
+| `llama3.2:3b` | 32/50 (64%) | 670.14 | 1,497.22 | 58.95 | 4,191.72 | 0.0477 |
+| `phi4-mini` | 50/50 (100%) | 1,642.44 | 3,901.67 | 31.67 | 1,916.33 | 0.1044 |
+| `qwen3:8b` | 47/50 (94%) | 5,141.19 | 12,683.48 | 7.97 | 600.79 | 0.3329 |
 
-## Checks
 
-```bash
-python -m pytest -q tests/test_benchmark.py tests/test_parser.py
-```
+We choose **Phi4-mini** for this accuracy-focused task: 50/50 correct, with lower latency and hardware cost than Qwen. This result applies to the current synthetic test set, not all ecommerce questions.
 
-These tests check model routing, combined CSV preservation, and shared parser behavior without calling Ollama.
 
-The shared parser accepts plain SQL or one complete Markdown code block with no language label, `sql`, or `sqlite` (case-insensitive). Explanations outside the block remain invalid. The same rules apply to every model.
+## Contributions
+
+- **Nour Guidara:** Initial project setup and Gemma testing.
+- **Youssef Sassi:** Qwen 8B testing and item generation.
+- **Asma Turki:** Llama testing and report.
+- **Emna Smali:** Phi4-mini testing and postmortem.

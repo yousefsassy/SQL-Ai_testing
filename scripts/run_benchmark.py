@@ -86,13 +86,15 @@ def main():
     argument_parser.add_argument(
         "--split",
         choices=["dev", "test"],
-        default="dev"
+        default="test",
+        help="Dataset split (default: test); use dev for debugging"
     )
 
     argument_parser.add_argument(
         "--hardware-cost-per-hour",
         type=float,
-        default=None
+        default=0.20,
+        help="Assumed hardware operating cost in EUR/hour (default: 0.20)"
     )
 
     argument_parser.add_argument(

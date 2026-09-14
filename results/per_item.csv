@@ -193,3 +193,1208 @@ GROUP BY c.name
 HAVING COUNT(o.id) > 0 
 ORDER BY SUM(p.price * o.quantity) DESC;",False,wrong_result,1646.83,374,64,55.96,
 llama3.2:3b,10,dev,hard,"Find the single product ordered by the largest number of distinct customers, identifying products by product ID and customers by customer ID. Count a customer only once per product, even if they ordered it multiple times. If products tie, choose the product with the smallest product ID. Return exactly two columns, in this order: product name, distinct customer count.","SELECT T1.name, COUNT(DISTINCT T2.customer_id) FROM products AS T1 INNER JOIN orders AS T2 ON T1.id = T2.product_id GROUP BY T1.id ORDER BY COUNT(DISTINCT T2.customer_id) DESC, T1.id","SELECT T1.name, COUNT(DISTINCT T2.customer_id) FROM products AS T1 INNER JOIN orders AS T2 ON T1.id = T2.product_id GROUP BY T1.id ORDER BY COUNT(DISTINCT T2.customer_id) DESC, T1.id;",False,wrong_result,1421.37,354,56,56.08,
+gemma3:1b,1,test,easy,How many customers live in Tunisia?,"```sqlite
+SELECT count(*) FROM customers WHERE country = 'Tunisia'
+```",SELECT count(*) FROM customers WHERE country = 'Tunisia';,True,correct,3444.75,320,18,109.69,
+gemma3:1b,2,test,easy,List the names of customers from Italy.,"```sqlite
+SELECT name FROM customers WHERE country = 'Italy'
+```",SELECT name FROM customers WHERE country = 'Italy';,True,correct,624.04,321,16,110.99,
+gemma3:1b,3,test,easy,"Which products belong to the Sports category? Show their names and prices, in that order.","```sqlite
+SELECT p.name, p.price FROM products p WHERE p.category = 'Sports';
+```","SELECT p.name, p.price FROM products p WHERE p.category = 'Sports';",True,correct,706.01,331,25,111.25,
+gemma3:1b,4,test,easy,"Show the names and prices of products costing less than 50, with the name first.","```sqlite
+SELECT name, price FROM products WHERE price < 50
+```","SELECT name, price FROM products WHERE price < 50;",True,correct,638.48,332,18,113.17,
+gemma3:1b,5,test,easy,How many products cost at least 100?,"```sqlite
+SELECT COUNT(*) FROM products WHERE price >= 100
+```",SELECT COUNT(*) FROM products WHERE price >= 100;,True,correct,641.4,324,18,112.19,
+gemma3:1b,6,test,easy,What is the average price of a Furniture product?,"```sqlite
+SELECT AVG(price) FROM products WHERE category = 'Furniture'
+```",SELECT AVG(price) FROM products WHERE category = 'Furniture';,True,correct,650.29,323,19,111.93,
+gemma3:1b,7,test,easy,Give the lowest product price in the catalog.,"```sqlite
+SELECT p.price FROM products p WHERE p.category = 'All'
+```",SELECT p.price FROM products p WHERE p.category = 'All';,False,wrong_result,666.08,322,21,112.63,
+gemma3:1b,8,test,easy,What is the highest price among Clothing products?,"```sqlite
+SELECT MAX(price) FROM products WHERE category = 'Clothing';
+```",SELECT MAX(price) FROM products WHERE category = 'Clothing';,True,correct,650.02,322,19,111.97,
+gemma3:1b,9,test,easy,"How many orders were placed during February 2024, including February 29?","```sqlite
+SELECT COUNT(*) FROM orders WHERE order_date LIKE '2024-02%' AND order_date BETWEEN '2024-02-01' AND '2024-02-29';
+```",SELECT COUNT(*) FROM orders WHERE order_date LIKE '2024-02%' AND order_date BETWEEN '2024-02-01' AND '2024-02-29';,True,correct,995.82,332,55,106.58,
+gemma3:1b,10,test,easy,"List order IDs and dates for purchases made from June 1 through June 30, 2025, inclusive, with the ID first.","```sqlite
+SELECT order_id, order_date FROM orders WHERE order_date BETWEEN '2025-06-01' AND '2025-06-30'
+```","SELECT order_id, order_date FROM orders WHERE order_date BETWEEN '2025-06-01' AND '2025-06-30';",False,execution_error,975.19,344,46,107.69,no such column: order_id
+gemma3:1b,11,test,easy,What is the total quantity across orders placed in 2024?,"```sqlite
+SELECT SUM(quantity) FROM orders WHERE order_date LIKE '2024/01%'
+```",SELECT SUM(quantity) FROM orders WHERE order_date LIKE '2024/01%';,False,wrong_result,725.48,328,27,110.25,
+gemma3:1b,12,test,easy,How many orders have a quantity of at least four?,"```sqlite
+SELECT COUNT(*) FROM orders WHERE quantity >= 4
+```",SELECT COUNT(*) FROM orders WHERE quantity >= 4;,True,correct,625.28,324,16,109.74,
+gemma3:1b,13,test,easy,"Show each different customer country once, in alphabetical order.","```sqlite
+SELECT DISTINCT country FROM customers ORDER BY country ASC
+```",SELECT DISTINCT country FROM customers ORDER BY country ASC;,True,correct,615.89,324,15,112.74,
+gemma3:1b,14,test,easy,"Find the three cheapest products. Display product ID, name, and price, ordered from lowest price to highest, with smaller product IDs first when prices tie.","SELECT p.id, p.name, p.price FROM products p JOIN orders o ON o.product_id = p.id ORDER BY p.price ASC, p.id ASC
+","SELECT p.id, p.name, p.price FROM products p JOIN orders o ON o.product_id = p.id ORDER BY p.price ASC, p.id ASC;",False,wrong_result,925.03,344,41,109.13,
+gemma3:1b,15,test,easy,"Which product has the highest price? If prices tie, choose the smallest product ID. Show its name followed by its price.","```sqlite
+SELECT T1.name, T1.price FROM products AS T1 JOIN orders AS T2 ON T2.product_id = T1.id ORDER BY T1.price DESC LIMIT 1
+```","SELECT T1.name, T1.price FROM products AS T1 JOIN orders AS T2 ON T2.product_id = T1.id ORDER BY T1.price DESC LIMIT 1;",True,correct,940.28,338,48,104.55,
+gemma3:1b,16,test,easy,On what date was the earliest order placed? Show only the date.,"```sqlite
+SELECT order_date FROM orders
+```",SELECT order_date FROM orders;,False,wrong_result,596.52,327,12,109.04,
+gemma3:1b,17,test,easy,"List the names of products priced from 50 to 100, including both endpoints.","```sqlite
+SELECT name FROM products WHERE price BETWEEN 50 AND 100
+```",SELECT name FROM products WHERE price BETWEEN 50 AND 100;,True,correct,684.41,333,21,106.59,
+gemma3:1b,18,test,easy,How many customers are from either Germany or Spain?,"```sqlite
+SELECT COUNT(DISTINCT c.id) FROM customers AS c WHERE c.country IN ('Germany', 'Spain');
+```","SELECT COUNT(DISTINCT c.id) FROM customers AS c WHERE c.country IN ('Germany', 'Spain');",True,correct,769.83,323,30,105.56,
+gemma3:1b,19,test,easy,What is the average quantity per order?,"```sqlite
+SELECT SUM(quantity) / COUNT(*) FROM orders
+```",SELECT SUM(quantity) / COUNT(*) FROM orders;,False,wrong_result,634.06,321,16,106.64,
+gemma3:1b,20,test,easy,"Show the five most recent orders as order ID followed by order date. Sort newest dates first, and smaller order IDs first for orders on the same date.","```sqlite
+SELECT id, order_date FROM orders ORDER BY order_date DESC, order_id ASC LIMIT 5
+```","SELECT id, order_date FROM orders ORDER BY order_date DESC, order_id ASC LIMIT 5;",False,execution_error,818.99,344,28,105.18,no such column: order_id
+gemma3:1b,21,test,medium,"For orders placed by customers from Tunisia, list the order ID, customer name, and order date, in that order.","```sqlite
+SELECT o.id, c.name, o.order_date FROM orders o JOIN customers c ON o.customer_id = c.id WHERE c.country = 'Tunisia'
+```","SELECT o.id, c.name, o.order_date FROM orders o JOIN customers c ON o.customer_id = c.id WHERE c.country = 'Tunisia';",True,correct,901.29,337,45,107.94,
+gemma3:1b,22,test,medium,"Show the order ID, product name, and quantity for orders of Furniture products, in that order.","```sqlite
+SELECT ""order_id"", ""product_name"", ""quantity"" FROM orders WHERE category = ""Furniture""
+```","SELECT ""order_id"", ""product_name"", ""quantity"" FROM orders WHERE category = ""Furniture"";",False,execution_error,739.95,333,28,109.81,no such column: category
+gemma3:1b,23,test,medium,Which customers have ordered the product named Laptop? List each customer once by customer ID followed by name.,"```sqlite
+SELECT c.name FROM customers c WHERE c.name = 'Laptop' ORDER BY c.name
+```",SELECT c.name FROM customers c WHERE c.name = 'Laptop' ORDER BY c.name;,False,wrong_result,720.75,333,26,109.08,
+gemma3:1b,24,test,medium,"For every customer, including those with no orders, show customer ID, name, and number of orders. Customers without orders should have a count of zero.","```sqlite
+SELECT c.id, c.name, COUNT(o.id) FROM customers c JOIN orders o ON c.id = o.customer_id WHERE o.id IS NULL
+```","SELECT c.id, c.name, COUNT(o.id) FROM customers c JOIN orders o ON c.id = o.customer_id WHERE o.id IS NULL;",False,wrong_result,951.65,344,43,106.58,
+gemma3:1b,25,test,medium,"For each product sold in 2025, report its product ID, name, and total quantity sold during that year.","```sqlite
+SELECT p.id, p.name, SUM(o.quantity) FROM products p JOIN orders o ON p.id = o.product_id WHERE strftime('%Y', o.order_date) = '2025' GROUP BY p.id, p.name
+```","SELECT p.id, p.name, SUM(o.quantity) FROM products p JOIN orders o ON p.id = o.product_id WHERE strftime('%Y', o.order_date) = '2025' GROUP BY p.id, p.name;",True,correct,1096.97,339,65,106.02,
+gemma3:1b,26,test,medium,How many customers are registered in each country? Show country followed by customer count.,"SELECT country, COUNT(*) FROM customers GROUP BY country;","SELECT country, COUNT(*) FROM customers GROUP BY country;",True,correct,588.78,329,12,113.09,
+gemma3:1b,27,test,medium,What is the average catalog price in each product category? Display category followed by average price.,"```sqlite
+SELECT p.category, AVG(p.price) FROM products p GROUP BY p.category
+```","SELECT p.category, AVG(p.price) FROM products p GROUP BY p.category;",True,correct,713.89,331,25,109.08,
+gemma3:1b,28,test,medium,"For each country whose customers have placed orders, show the country and its total number of orders.","```sqlite
+SELECT c.country, COUNT(o.id) FROM customers c JOIN orders o ON c.id = o.customer_id GROUP BY c.country
+```","SELECT c.country, COUNT(o.id) FROM customers c JOIN orders o ON c.id = o.customer_id GROUP BY c.country;",True,correct,840.92,332,38,107.59,
+gemma3:1b,29,test,medium,"How many distinct customers have purchased an Electronics product? Count each customer ID once, even if they made several purchases.","SELECT count(*) FROM customers WHERE country = 'Electronics'
+",SELECT count(*) FROM customers WHERE country = 'Electronics';,False,wrong_result,597.74,336,13,112.9,
+gemma3:1b,30,test,medium,"Which customers placed at least six orders? Display customer ID, name, and order count.","```sqlite
+SELECT c.id, c.name, COUNT(o.id) FROM customers c JOIN orders o ON c.id = o.customer_id WHERE o.quantity > 0 GROUP BY c.id, c.name HAVING COUNT(o.id) >= 6
+```","SELECT c.id, c.name, COUNT(o.id) FROM customers c JOIN orders o ON c.id = o.customer_id WHERE o.quantity > 0 GROUP BY c.id, c.name HAVING COUNT(o.id) >= 6;",True,correct,1078.08,331,63,105.94,
+gemma3:1b,31,test,medium,"Identify products with more than 150 units sold across all orders. Show product ID, product name, and total units sold.","```sqlite
+SELECT p.name, p.category, SUM(o.quantity) FROM products p JOIN orders o ON p.id = o.product_id GROUP BY p.id, p.name, p.category
+```","SELECT p.name, p.category, SUM(o.quantity) FROM products p JOIN orders o ON p.id = o.product_id GROUP BY p.id, p.name, p.category;",False,wrong_result,948.51,340,50,107.59,
+gemma3:1b,32,test,medium,"What revenue came from orders placed in 2024? Revenue is product price multiplied by quantity, totaled across those orders. Show only the total revenue without rounding.","```sqlite
+SELECT SUM(product_price * quantity) FROM orders WHERE order_date LIKE '2024%';
+```",SELECT SUM(product_price * quantity) FROM orders WHERE order_date LIKE '2024%';,False,execution_error,808.9,347,28,108.99,no such column: product_price
+gemma3:1b,33,test,medium,"Report revenue for each product category with orders in 2025. Revenue is product price multiplied by quantity. Show category followed by total revenue for that year, without rounding.","```sqlite
+SELECT p.category, SUM(p.price * o.quantity) FROM products p JOIN orders o ON p.id = o.product_id WHERE strftime('%Y', o.order_date) = '2025' GROUP BY p.category
+```","SELECT p.category, SUM(p.price * o.quantity) FROM products p JOIN orders o ON p.id = o.product_id WHERE strftime('%Y', o.order_date) = '2025' GROUP BY p.category;",True,correct,1123.47,349,61,106.52,
+gemma3:1b,34,test,medium,"Which five customers placed the most orders in 2024? Show customer ID, name, and order count for customers with orders that year, sorted by count from highest to lowest and then by customer ID from smallest to largest.","```sqlite
+SELECT c.name, c.id, COUNT(o.id) FROM customers c JOIN orders o ON c.id = o.customer_id GROUP BY c.id, c.name ORDER BY COUNT(o.id) DESC, c.id ASC
+```","SELECT c.name, c.id, COUNT(o.id) FROM customers c JOIN orders o ON c.id = o.customer_id GROUP BY c.id, c.name ORDER BY COUNT(o.id) DESC, c.id ASC;",False,wrong_result,1120.66,360,60,105.7,
+gemma3:1b,35,test,medium,"Among products with at least one order, which has the smallest total quantity sold? Break ties using the smallest product ID. Give product ID, name, and total quantity sold.","SELECT p.name, p.id, SUM(o.quantity) FROM products p JOIN orders o ON p.id = o.product_id GROUP BY p.id HAVING COUNT(*) = 1 ORDER BY SUM(o.quantity) ASC LIMIT 1
+","SELECT p.name, p.id, SUM(o.quantity) FROM products p JOIN orders o ON p.id = o.product_id GROUP BY p.id HAVING COUNT(*) = 1 ORDER BY SUM(o.quantity) ASC LIMIT 1;",False,wrong_result,1074.03,348,56,106.79,
+gemma3:1b,36,test,medium,"For each month of 2025 that contains orders, show the month as YYYY-MM followed by its order count. List months from earliest to latest.","```sqlite
+SELECT
+    strftime('%Y-%m', order_date) AS month,
+    COUNT(*) AS order_count
+FROM
+    orders
+WHERE
+    strftime('%Y', order_date) = '2025'
+GROUP BY
+    month
+ORDER BY
+    month ASC
+```","SELECT
+    strftime('%Y-%m', order_date) AS month,
+    COUNT(*) AS order_count
+FROM
+    orders
+WHERE
+    strftime('%Y', order_date) = '2025'
+GROUP BY
+    month
+ORDER BY
+    month ASC;",True,correct,1185.39,348,67,106.54,
+gemma3:1b,37,test,medium,"For each customer who has ordered, show customer ID, name, and the date of their most recent order.","```sqlite
+SELECT c.id, c.name, o.order_date FROM customers c JOIN orders o ON c.id = o.product_id ORDER BY o.order_date DESC
+```","SELECT c.id, c.name, o.order_date FROM customers c JOIN orders o ON c.id = o.product_id ORDER BY o.order_date DESC;",False,wrong_result,896.18,335,44,106.96,
+gemma3:1b,38,test,medium,Which countries have at least 50 registered customers? Give the country and customer count.,"```sqlite
+SELECT country, COUNT(*) FROM customers WHERE country >= 50
+```","SELECT country, COUNT(*) FROM customers WHERE country >= 50;",False,wrong_result,659.2,331,19,108.45,
+gemma3:1b,39,test,medium,"List customers who have never placed an order, showing customer ID followed by name.","```sqlite
+SELECT c.id, c.name FROM customers c WHERE c.id NOT IN (SELECT DISTINCT o.customer_id FROM orders o WHERE o.product_id IS NULL)
+```","SELECT c.id, c.name FROM customers c WHERE c.id NOT IN (SELECT DISTINCT o.customer_id FROM orders o WHERE o.product_id IS NULL);",False,wrong_result,885.91,329,43,106.8,
+gemma3:1b,40,test,medium,"For each product category purchased by customers from France, show the category and total quantity those customers ordered.","```sqlite
+SELECT p.category, SUM(o.quantity) FROM products p, orders o WHERE p.category = 'France' AND o.customer_id = p.id GROUP BY p.category
+```","SELECT p.category, SUM(o.quantity) FROM products p, orders o WHERE p.category = 'France' AND o.customer_id = p.id GROUP BY p.category;",False,wrong_result,917.22,333,46,106.12,
+gemma3:1b,41,test,medium,"For each country with orders, how many distinct customers placed orders during 2025? Show country followed by that customer count, omitting countries with no orders in that year.","SELECT
+  c.country,
+  COUNT(*)
+FROM customers
+JOIN orders
+  ON customers.id = orders.customer_id
+WHERE
+  YEAR(orders.order_date) = 2025
+GROUP BY
+  c.country
+HAVING
+  COUNT(*) = 1
+ORDER BY
+  c.country;","SELECT
+  c.country,
+  COUNT(*)
+FROM customers
+JOIN orders
+  ON customers.id = orders.customer_id
+WHERE
+  YEAR(orders.order_date) = 2025
+GROUP BY
+  c.country
+HAVING
+  COUNT(*) = 1
+ORDER BY
+  c.country;",False,execution_error,1264.07,349,75,105.58,no such column: c.country
+gemma3:1b,42,test,medium,"Which products were ordered at least once from July 1 through December 31, 2024, inclusive? List each product once as product ID followed by name.","```sqlite
+SELECT p.name FROM products p JOIN orders o ON p.id = o.product_id WHERE o.order_date BETWEEN '2024-07-01' AND '2024-12-31'
+```",SELECT p.name FROM products p JOIN orders o ON p.id = o.product_id WHERE o.order_date BETWEEN '2024-07-01' AND '2024-12-31';,False,wrong_result,1098.12,349,58,106.3,
+gemma3:1b,43,test,hard,"Among customers who ordered in 2025, which spent more that year than the average total spending of those customers? Spending is product price multiplied by quantity. Show customer ID, name, and total spending in 2025 without rounding.","```sqlite
+SELECT c.name, c.id, c.price * c.quantity FROM customers c JOIN orders o ON c.id = o.customer_id WHERE o.order_date >= '2025' GROUP BY c.id ORDER BY c.price * c.quantity DESC
+```","SELECT c.name, c.id, c.price * c.quantity FROM customers c JOIN orders o ON c.id = o.customer_id WHERE o.order_date >= '2025' GROUP BY c.id ORDER BY c.price * c.quantity DESC;",False,execution_error,1175.44,364,66,106.46,no such column: c.price
+gemma3:1b,44,test,hard,"Which products cost more than the average catalog price within their own category? Show product ID, name, category, and price, in that order.","```sqlite
+SELECT p.name, p.category, p.price FROM products p WHERE p.price > (SELECT AVG(p2.price) FROM products p2 WHERE p2.category = p.category)
+```","SELECT p.name, p.category, p.price FROM products p WHERE p.price > (SELECT AVG(p2.price) FROM products p2 WHERE p2.category = p.category);",False,wrong_result,1008.75,342,49,106.88,
+gemma3:1b,45,test,hard,"Which country generated the most revenue from orders in 2024? Attribute each order to its customer country and calculate revenue as product price multiplied by quantity. For equal totals, choose the country first alphabetically. Show country followed by total revenue without rounding.","```sqlite
+SELECT c.country, SUM(p.price * o.quantity) FROM customers c JOIN orders o ON c.id = o.customer_id GROUP BY c.country
+ORDER BY SUM(p.price * o.quantity) DESC
+```","SELECT c.country, SUM(p.price * o.quantity) FROM customers c JOIN orders o ON c.id = o.customer_id GROUP BY c.country
+ORDER BY SUM(p.price * o.quantity) DESC;",False,execution_error,1080.96,364,56,106.57,no such column: p.price
+gemma3:1b,46,test,hard,"Among customers from Germany who have ordered, who has the highest total spending across all orders? Spending is product price multiplied by quantity. Break ties with the smallest customer ID. Show customer ID, name, and total spending without rounding.","```sqlite
+SELECT c.id, c.name, SUM(p.price * p.quantity) FROM customers c JOIN orders o ON c.id = o.customer_id JOIN products p ON o.product_id = p.id GROUP BY c.id, c.name
+ORDER BY SUM(p.price * p.quantity) DESC
+```","SELECT c.id, c.name, SUM(p.price * p.quantity) FROM customers c JOIN orders o ON c.id = o.customer_id JOIN products p ON o.product_id = p.id GROUP BY c.id, c.name
+ORDER BY SUM(p.price * p.quantity) DESC;",False,execution_error,1281.51,359,77,105.86,no such column: p.quantity
+gemma3:1b,47,test,hard,"Which product reached the most distinct customers during 2025? Count each customer ID once per product and consider only products ordered that year. If counts tie, select the smallest product ID. Show product ID, name, and distinct customer count.","```sqlite
+SELECT p.name, p.product_id, COUNT(o.id) FROM products p JOIN orders o ON p.product_id = o.product_id WHERE strftime('%Y', o.order_date) = '2025' GROUP BY p.product_id
+ORDER BY COUNT(o.id) DESC
+```","SELECT p.name, p.product_id, COUNT(o.id) FROM products p JOIN orders o ON p.product_id = o.product_id WHERE strftime('%Y', o.order_date) = '2025' GROUP BY p.product_id
+ORDER BY COUNT(o.id) DESC;",False,execution_error,1284.41,363,77,105.42,no such column: p.product_id
+gemma3:1b,48,test,hard,"Identify customers who bought at least one Electronics product and at least one Furniture product at any time. List each qualifying customer once, showing customer ID and name.","```sqlite
+SELECT DISTINCT c.name FROM customers c JOIN orders o ON c.id = o.customer_id WHERE o.product_id IN (SELECT id FROM products WHERE category = 'Electronics') AND o.product_id IN (SELECT id FROM products WHERE category = 'Furniture')
+```",SELECT DISTINCT c.name FROM customers c JOIN orders o ON c.id = o.customer_id WHERE o.product_id IN (SELECT id FROM products WHERE category = 'Electronics') AND o.product_id IN (SELECT id FROM products WHERE category = 'Furniture');,False,wrong_result,1150.46,344,63,105.55,
+gemma3:1b,49,test,hard,"Which products have a total quantity sold greater than the average total quantity sold per product? Include all catalog products in the average, treating unsold products as having zero units sold. Show product ID, name, and total quantity sold.","```sqlite
+SELECT p.name, p.price, SUM(o.quantity) FROM products p JOIN orders o ON p.id = o.product_id GROUP BY p.id, p.name, p.price HAVING SUM(o.quantity) > (SELECT AVG(quantity) FROM products)
+```","SELECT p.name, p.price, SUM(o.quantity) FROM products p JOIN orders o ON p.id = o.product_id GROUP BY p.id, p.name, p.price HAVING SUM(o.quantity) > (SELECT AVG(quantity) FROM products);",False,wrong_result,1191.5,358,67,104.83,
+gemma3:1b,50,test,hard,Find customers who placed orders in 2024 but none in 2025. Show each qualifying customer once as customer ID followed by name.,"```sqlite
+SELECT c.name FROM customers c WHERE c.id IN (SELECT c2.id FROM customers c2 WHERE c2.country = 'USA' AND c2.id != c.id) AND c.country = 'USA' AND c.id != 2025;
+```",SELECT c.name FROM customers c WHERE c.id IN (SELECT c2.id FROM customers c2 WHERE c2.country = 'USA' AND c2.id != c.id) AND c.country = 'USA' AND c.id != 2025;,False,wrong_result,1176.36,345,66,105.4,
+llama3.2:3b,1,test,easy,How many customers live in Tunisia?,SELECT COUNT(*) FROM customers WHERE country = 'Tunisia',SELECT COUNT(*) FROM customers WHERE country = 'Tunisia';,True,correct,6610.61,292,14,60.53,
+llama3.2:3b,2,test,easy,List the names of customers from Italy.,SELECT name FROM customers WHERE country = 'Italy',SELECT name FROM customers WHERE country = 'Italy';,True,correct,286.06,293,11,62.05,
+llama3.2:3b,3,test,easy,"Which products belong to the Sports category? Show their names and prices, in that order.","SELECT name, price FROM products WHERE category = 'Sports'","SELECT name, price FROM products WHERE category = 'Sports';",True,correct,366.98,303,13,61.0,
+llama3.2:3b,4,test,easy,"Show the names and prices of products costing less than 50, with the name first.","SELECT name, price FROM products WHERE price < 50 ORDER BY name","SELECT name, price FROM products WHERE price < 50 ORDER BY name;",True,correct,393.99,303,15,60.98,
+llama3.2:3b,5,test,easy,How many products cost at least 100?,SELECT COUNT(*) FROM products WHERE price >= 100,SELECT COUNT(*) FROM products WHERE price >= 100;,True,correct,281.25,294,11,62.4,
+llama3.2:3b,6,test,easy,What is the average price of a Furniture product?,SELECT AVG(T2.price) FROM products AS T1 INNER JOIN orders AS T2 ON T1.id = T2.product_id WHERE T1.category = 'Furniture',SELECT AVG(T2.price) FROM products AS T1 INNER JOIN orders AS T2 ON T1.id = T2.product_id WHERE T1.category = 'Furniture';,False,execution_error,721.66,295,36,58.33,no such column: T2.price
+llama3.2:3b,7,test,easy,Give the lowest product price in the catalog.,SELECT MIN(price) FROM products,SELECT MIN(price) FROM products;,True,correct,210.37,294,7,66.62,
+llama3.2:3b,8,test,easy,What is the highest price among Clothing products?,SELECT MAX(price) FROM products WHERE category = 'Clothing',SELECT MAX(price) FROM products WHERE category = 'Clothing';,True,correct,334.56,294,14,61.4,
+llama3.2:3b,9,test,easy,"How many orders were placed during February 2024, including February 29?",SELECT COUNT(*) FROM orders WHERE order_date LIKE '%2024-02%',SELECT COUNT(*) FROM orders WHERE order_date LIKE '%2024-02%';,True,correct,408.86,301,16,60.57,
+llama3.2:3b,10,test,easy,"List order IDs and dates for purchases made from June 1 through June 30, 2025, inclusive, with the ID first.","SELECT id, order_date FROM orders WHERE order_date BETWEEN '2025-06-01' AND '2025-06-30'","SELECT id, order_date FROM orders WHERE order_date BETWEEN '2025-06-01' AND '2025-06-30';",True,correct,719.53,313,29,58.56,
+llama3.2:3b,11,test,easy,What is the total quantity across orders placed in 2024?,SELECT SUM(quantity) FROM orders WHERE order_date LIKE '%/%/24',SELECT SUM(quantity) FROM orders WHERE order_date LIKE '%/%/24';,False,wrong_result,412.51,298,16,59.79,
+llama3.2:3b,12,test,easy,How many orders have a quantity of at least four?,SELECT COUNT(*) FROM orders WHERE quantity >= 4,SELECT COUNT(*) FROM orders WHERE quantity >= 4;,True,correct,283.87,296,11,61.89,
+llama3.2:3b,13,test,easy,"Show each different customer country once, in alphabetical order.",SELECT DISTINCT country FROM customers ORDER BY country,SELECT DISTINCT country FROM customers ORDER BY country;,True,correct,245.37,296,9,64.14,
+llama3.2:3b,14,test,easy,"Find the three cheapest products. Display product ID, name, and price, ordered from lowest price to highest, with smaller product IDs first when prices tie.","SELECT name, price, id FROM products ORDER BY price, id","SELECT name, price, id FROM products ORDER BY price, id;",False,wrong_result,453.79,316,14,60.87,
+llama3.2:3b,15,test,easy,"Which product has the highest price? If prices tie, choose the smallest product ID. Show its name followed by its price.","SELECT name, price FROM products ORDER BY price DESC, id ASC","SELECT name, price FROM products ORDER BY price DESC, id ASC;",False,wrong_result,416.78,310,14,60.45,
+llama3.2:3b,16,test,easy,On what date was the earliest order placed? Show only the date.,SELECT MIN(order_date) FROM orders,SELECT MIN(order_date) FROM orders;,True,correct,272.31,299,8,64.83,
+llama3.2:3b,17,test,easy,"List the names of products priced from 50 to 100, including both endpoints.",SELECT name FROM products WHERE price BETWEEN 50 AND 100,SELECT name FROM products WHERE price BETWEEN 50 AND 100;,True,correct,359.59,302,13,60.99,
+llama3.2:3b,18,test,easy,How many customers are from either Germany or Spain?,"SELECT COUNT(*) FROM customers WHERE country IN ('Germany', 'Spain')","SELECT COUNT(*) FROM customers WHERE country IN ('Germany', 'Spain');",True,correct,354.01,295,15,60.25,
+llama3.2:3b,19,test,easy,What is the average quantity per order?,SELECT AVG(quantity) FROM orders,SELECT AVG(quantity) FROM orders;,True,correct,212.04,293,7,65.56,
+llama3.2:3b,20,test,easy,"Show the five most recent orders as order ID followed by order date. Sort newest dates first, and smaller order IDs first for orders on the same date.","SELECT order_id, order_date FROM orders ORDER BY order_date DESC, order_id ASC LIMIT 5","SELECT order_id, order_date FROM orders ORDER BY order_date DESC, order_id ASC LIMIT 5;",False,execution_error,580.49,316,21,58.95,no such column: order_id
+llama3.2:3b,21,test,medium,"For orders placed by customers from Tunisia, list the order ID, customer name, and order date, in that order.","SELECT id, name, order_date FROM orders WHERE customer_id IN (SELECT id FROM customers WHERE country = 'Tunisia')","SELECT id, name, order_date FROM orders WHERE customer_id IN (SELECT id FROM customers WHERE country = 'Tunisia');",False,execution_error,652.43,309,27,58.4,no such column: name
+llama3.2:3b,22,test,medium,"Show the order ID, product name, and quantity for orders of Furniture products, in that order.","SELECT orders.id, products.name, orders.quantity FROM orders JOIN products ON orders.product_id = products.id WHERE products.category = 'Furniture'","SELECT orders.id, products.name, orders.quantity FROM orders JOIN products ON orders.product_id = products.id WHERE products.category = 'Furniture';",True,correct,682.51,305,29,58.26,
+llama3.2:3b,23,test,medium,Which customers have ordered the product named Laptop? List each customer once by customer ID followed by name.,"SELECT DISTINCT customers.id, customers.name FROM customers JOIN orders ON customers.id = orders.customer_id JOIN products ON orders.product_id = products.id WHERE products.name = 'Laptop'","SELECT DISTINCT customers.id, customers.name FROM customers JOIN orders ON customers.id = orders.customer_id JOIN products ON orders.product_id = products.id WHERE products.name = 'Laptop';",True,correct,808.89,305,36,57.67,
+llama3.2:3b,24,test,medium,"For every customer, including those with no orders, show customer ID, name, and number of orders. Customers without orders should have a count of zero.","SELECT customer_id, name, COUNT(order_id) FROM customers GROUP BY customer_id","SELECT customer_id, name, COUNT(order_id) FROM customers GROUP BY customer_id;",False,execution_error,509.08,316,17,59.67,no such column: customer_id
+llama3.2:3b,25,test,medium,"For each product sold in 2025, report its product ID, name, and total quantity sold during that year.","SELECT T1.id, T1.name, SUM(T2.quantity) FROM products AS T1 INNER JOIN orders AS T2 ON T1.id = T2.product_id WHERE STRFTIME('%Y', T2.order_date) = '2025' GROUP BY T1.id","SELECT T1.id, T1.name, SUM(T2.quantity) FROM products AS T1 INNER JOIN orders AS T2 ON T1.id = T2.product_id WHERE STRFTIME('%Y', T2.order_date) = '2025' GROUP BY T1.id;",True,correct,1194.93,309,57,56.67,
+llama3.2:3b,26,test,medium,How many customers are registered in each country? Show country followed by customer count.,"SELECT country, COUNT(*) FROM customers GROUP BY country","SELECT country, COUNT(*) FROM customers GROUP BY country;",True,correct,324.18,301,11,61.48,
+llama3.2:3b,27,test,medium,What is the average catalog price in each product category? Display category followed by average price.,"SELECT category, AVG(price) FROM products GROUP BY category","SELECT category, AVG(price) FROM products GROUP BY category;",True,correct,342.96,303,12,61.17,
+llama3.2:3b,28,test,medium,"For each country whose customers have placed orders, show the country and its total number of orders.","SELECT country, COUNT(id) FROM customers GROUP BY country","SELECT country, COUNT(id) FROM customers GROUP BY country;",False,wrong_result,343.04,304,12,61.05,
+llama3.2:3b,29,test,medium,"How many distinct customers have purchased an Electronics product? Count each customer ID once, even if they made several purchases.",SELECT COUNT(DISTINCT T1.customer_id) FROM orders AS T1 INNER JOIN products AS T2 ON T1.product_id = T2.id WHERE T2.category = 'Electronics',SELECT COUNT(DISTINCT T1.customer_id) FROM orders AS T1 INNER JOIN products AS T2 ON T1.product_id = T2.id WHERE T2.category = 'Electronics';,True,correct,890.81,308,40,57.21,
+llama3.2:3b,30,test,medium,"Which customers placed at least six orders? Display customer ID, name, and order count.","SELECT customers.id, customers.name, COUNT(orders.id) FROM customers JOIN orders ON customers.id = orders.customer_id GROUP BY customers.id HAVING COUNT(orders.id) >= 6 ORDER BY COUNT(orders.id) DESC","SELECT customers.id, customers.name, COUNT(orders.id) FROM customers JOIN orders ON customers.id = orders.customer_id GROUP BY customers.id HAVING COUNT(orders.id) >= 6 ORDER BY COUNT(orders.id) DESC;",True,correct,957.91,303,46,56.72,
+llama3.2:3b,31,test,medium,"Identify products with more than 150 units sold across all orders. Show product ID, product name, and total units sold.","SELECT T1.id, T1.name, SUM(T2.quantity) FROM products AS T1 INNER JOIN orders AS T2 ON T1.id = T2.product_id GROUP BY T1.id HAVING SUM(T2.quantity) > 150","SELECT T1.id, T1.name, SUM(T2.quantity) FROM products AS T1 INNER JOIN orders AS T2 ON T1.id = T2.product_id GROUP BY T1.id HAVING SUM(T2.quantity) > 150;",True,correct,1069.11,311,50,56.61,
+llama3.2:3b,32,test,medium,"What revenue came from orders placed in 2024? Revenue is product price multiplied by quantity, totaled across those orders. Show only the total revenue without rounding.","SELECT SUM(T1.price * T2.quantity) FROM products AS T1 INNER JOIN orders AS T2 ON T1.id = T2.product_id WHERE STRFTIME('%Y', T2.order_date) = '2024'","SELECT SUM(T1.price * T2.quantity) FROM products AS T1 INNER JOIN orders AS T2 ON T1.id = T2.product_id WHERE STRFTIME('%Y', T2.order_date) = '2024';",True,correct,1072.04,317,48,56.61,
+llama3.2:3b,33,test,medium,"Report revenue for each product category with orders in 2025. Revenue is product price multiplied by quantity. Show category followed by total revenue for that year, without rounding.","SELECT T3.category, SUM(T1.price * T2.quantity) FROM orders AS T1 INNER JOIN products AS T2 ON T1.product_id = T2.id WHERE T1.order_date LIKE '2025%' GROUP BY T2.category","SELECT T3.category, SUM(T1.price * T2.quantity) FROM orders AS T1 INNER JOIN products AS T2 ON T1.product_id = T2.id WHERE T1.order_date LIKE '2025%' GROUP BY T2.category;",False,execution_error,1110.37,319,50,56.57,no such column: T3.category
+llama3.2:3b,34,test,medium,"Which five customers placed the most orders in 2024? Show customer ID, name, and order count for customers with orders that year, sorted by count from highest to lowest and then by customer ID from smallest to largest.","SELECT customers.id, customers.name, COUNT(orders.id) FROM customers JOIN orders ON customers.id = orders.customer_id WHERE orders.order_date LIKE '%2024%' GROUP BY customers.id ORDER BY COUNT(orders.id) DESC, customers.id ASC LIMIT 5","SELECT customers.id, customers.name, COUNT(orders.id) FROM customers JOIN orders ON customers.id = orders.customer_id WHERE orders.order_date LIKE '%2024%' GROUP BY customers.id ORDER BY COUNT(orders.id) DESC, customers.id ASC LIMIT 5;",True,correct,1261.3,330,52,56.35,
+llama3.2:3b,35,test,medium,"Among products with at least one order, which has the smallest total quantity sold? Break ties using the smallest product ID. Give product ID, name, and total quantity sold.","SELECT T1.name, T1.price, SUM(T2.quantity) FROM products AS T1 INNER JOIN orders AS T2 ON T1.id = T2.product_id GROUP BY T1.id ORDER BY SUM(T2.quantity) ASC, T1.id ASC","SELECT T1.name, T1.price, SUM(T2.quantity) FROM products AS T1 INNER JOIN orders AS T2 ON T1.id = T2.product_id GROUP BY T1.id ORDER BY SUM(T2.quantity) ASC, T1.id ASC;",False,wrong_result,1163.6,320,53,56.43,
+llama3.2:3b,36,test,medium,"For each month of 2025 that contains orders, show the month as YYYY-MM followed by its order count. List months from earliest to latest.","SELECT strftime('%Y-%m', order_date) AS month, COUNT(*) FROM orders WHERE order_date LIKE '2025-%' GROUP BY strftime('%Y-%m', order_date) ORDER BY strftime('%Y-%m', order_date)","SELECT strftime('%Y-%m', order_date) AS month, COUNT(*) FROM orders WHERE order_date LIKE '2025-%' GROUP BY strftime('%Y-%m', order_date) ORDER BY strftime('%Y-%m', order_date);",True,correct,1091.04,315,49,56.46,
+llama3.2:3b,37,test,medium,"For each customer who has ordered, show customer ID, name, and the date of their most recent order.","SELECT T1.id, T1.name, MAX(T3.order_date) AS most_recent_order_date FROM customers AS T1 INNER JOIN orders AS T2 ON T1.id = T2.customer_id INNER JOIN orders AS T3 ON T2.customer_id = T3.customer_id GROUP BY T1.id","SELECT T1.id, T1.name, MAX(T3.order_date) AS most_recent_order_date FROM customers AS T1 INNER JOIN orders AS T2 ON T1.id = T2.customer_id INNER JOIN orders AS T3 ON T2.customer_id = T3.customer_id GROUP BY T1.id;",True,correct,1291.16,307,62,56.03,
+llama3.2:3b,38,test,medium,Which countries have at least 50 registered customers? Give the country and customer count.,"SELECT country, COUNT(*) FROM customers GROUP BY country HAVING COUNT(*) >= 50 ORDER BY COUNT(*) DESC","SELECT country, COUNT(*) FROM customers GROUP BY country HAVING COUNT(*) >= 50 ORDER BY COUNT(*) DESC;",True,correct,543.66,302,23,57.87,
+llama3.2:3b,39,test,medium,"List customers who have never placed an order, showing customer ID followed by name.","SELECT id, name FROM customers WHERE id NOT IN (SELECT customer_id FROM orders)","SELECT id, name FROM customers WHERE id NOT IN (SELECT customer_id FROM orders);",True,correct,454.14,301,18,58.55,
+llama3.2:3b,40,test,medium,"For each product category purchased by customers from France, show the category and total quantity those customers ordered.","SELECT T1.category, SUM(T2.quantity) FROM products AS T1 INNER JOIN orders AS T2 ON T1.id = T2.product_id INNER JOIN customers AS T3 ON T2.customer_id = T3.id WHERE T3.country = 'France' GROUP BY T1.category","SELECT T1.category, SUM(T2.quantity) FROM products AS T1 INNER JOIN orders AS T2 ON T1.id = T2.product_id INNER JOIN customers AS T3 ON T2.customer_id = T3.id WHERE T3.country = 'France' GROUP BY T1.category;",True,correct,1237.71,305,59,56.04,
+llama3.2:3b,41,test,medium,"For each country with orders, how many distinct customers placed orders during 2025? Show country followed by that customer count, omitting countries with no orders in that year.","SELECT country, COUNT(DISTINCT customer_id) FROM orders WHERE order_date LIKE '%/%/25' GROUP BY country","SELECT country, COUNT(DISTINCT customer_id) FROM orders WHERE order_date LIKE '%/%/25' GROUP BY country;",False,execution_error,662.19,320,25,57.23,no such column: country
+llama3.2:3b,42,test,medium,"Which products were ordered at least once from July 1 through December 31, 2024, inclusive? List each product once as product ID followed by name.","SELECT DISTINCT T2.id, T2.name FROM orders AS T1 JOIN products AS T2 ON T1.product_id = T2.id WHERE T1.order_date BETWEEN '2024-07-01' AND '2024-12-31'","SELECT DISTINCT T2.id, T2.name FROM orders AS T1 JOIN products AS T2 ON T1.product_id = T2.id WHERE T1.order_date BETWEEN '2024-07-01' AND '2024-12-31';",True,correct,1153.62,318,52,56.04,
+llama3.2:3b,43,test,hard,"Among customers who ordered in 2025, which spent more that year than the average total spending of those customers? Spending is product price multiplied by quantity. Show customer ID, name, and total spending in 2025 without rounding.","SELECT customers.id, customers.name, SUM(products.price * orders.quantity) AS total_spending 
+FROM orders 
+JOIN customers ON orders.customer_id = customers.id 
+WHERE orders.order_date LIKE '2025%' 
+GROUP BY customers.id, customers.name 
+HAVING SUM(products.price * orders.quantity) > (SELECT AVG(SUM(products.price * orders.quantity)) 
+                                               FROM orders 
+                                               JOIN customers ON orders.customer_id = customers.id 
+                                               WHERE orders.order_date LIKE '2025%')","SELECT customers.id, customers.name, SUM(products.price * orders.quantity) AS total_spending 
+FROM orders 
+JOIN customers ON orders.customer_id = customers.id 
+WHERE orders.order_date LIKE '2025%' 
+GROUP BY customers.id, customers.name 
+HAVING SUM(products.price * orders.quantity) > (SELECT AVG(SUM(products.price * orders.quantity)) 
+                                               FROM orders 
+                                               JOIN customers ON orders.customer_id = customers.id 
+                                               WHERE orders.order_date LIKE '2025%');",False,execution_error,2120.78,332,99,55.52,no such column: products.price
+llama3.2:3b,44,test,hard,"Which products cost more than the average catalog price within their own category? Show product ID, name, category, and price, in that order.","SELECT id, name, category, price FROM products WHERE price > (SELECT AVG(price) FROM products WHERE category = category)","SELECT id, name, category, price FROM products WHERE price > (SELECT AVG(price) FROM products WHERE category = category);",False,wrong_result,678.1,314,26,57.31,
+llama3.2:3b,45,test,hard,"Which country generated the most revenue from orders in 2024? Attribute each order to its customer country and calculate revenue as product price multiplied by quantity. For equal totals, choose the country first alphabetically. Show country followed by total revenue without rounding.","SELECT country, SUM(price * quantity) AS revenue
+FROM orders
+JOIN customers ON orders.customer_id = customers.id
+WHERE order_date LIKE '2024%'
+GROUP BY country
+ORDER BY revenue DESC, country","SELECT country, SUM(price * quantity) AS revenue
+FROM orders
+JOIN customers ON orders.customer_id = customers.id
+WHERE order_date LIKE '2024%'
+GROUP BY country
+ORDER BY revenue DESC, country;",False,execution_error,1101.46,335,43,56.4,no such column: price
+llama3.2:3b,46,test,hard,"Among customers from Germany who have ordered, who has the highest total spending across all orders? Spending is product price multiplied by quantity. Break ties with the smallest customer ID. Show customer ID, name, and total spending without rounding.","SELECT customers.id, customers.name, SUM(products.price * orders.quantity) AS total_spending
+FROM customers
+JOIN orders ON customers.id = orders.customer_id
+WHERE customers.country = 'Germany'
+GROUP BY customers.id
+ORDER BY total_spending DESC, customers.id","SELECT customers.id, customers.name, SUM(products.price * orders.quantity) AS total_spending
+FROM customers
+JOIN orders ON customers.id = orders.customer_id
+WHERE customers.country = 'Germany'
+GROUP BY customers.id
+ORDER BY total_spending DESC, customers.id;",False,execution_error,1306.13,331,54,55.8,no such column: products.price
+llama3.2:3b,47,test,hard,"Which product reached the most distinct customers during 2025? Count each customer ID once per product and consider only products ordered that year. If counts tie, select the smallest product ID. Show product ID, name, and distinct customer count.","SELECT T1.id, T1.name, COUNT(DISTINCT T2.customer_id) FROM products AS T1 INNER JOIN orders AS T2 ON T1.id = T2.product_id WHERE T2.order_date LIKE '%2025%' GROUP BY T1.id ORDER BY COUNT(DISTINCT T2.customer_id) DESC, T1.id LIMIT 1","SELECT T1.id, T1.name, COUNT(DISTINCT T2.customer_id) FROM products AS T1 INNER JOIN orders AS T2 ON T1.id = T2.product_id WHERE T2.order_date LIKE '%2025%' GROUP BY T1.id ORDER BY COUNT(DISTINCT T2.customer_id) DESC, T1.id LIMIT 1;",True,correct,1653.56,333,73,55.53,
+llama3.2:3b,48,test,hard,"Identify customers who bought at least one Electronics product and at least one Furniture product at any time. List each qualifying customer once, showing customer ID and name.","SELECT DISTINCT T1.customer_id, T1.name FROM customers AS T1 INNER JOIN orders AS T2 ON T1.id = T2.customer_id INNER JOIN products AS T3 ON T2.product_id = T3.id WHERE T3.category IN ('Electronics', 'Furniture')","SELECT DISTINCT T1.customer_id, T1.name FROM customers AS T1 INNER JOIN orders AS T2 ON T1.id = T2.customer_id INNER JOIN products AS T3 ON T2.product_id = T3.id WHERE T3.category IN ('Electronics', 'Furniture');",False,execution_error,1284.69,317,59,55.73,no such column: T1.customer_id
+llama3.2:3b,49,test,hard,"Which products have a total quantity sold greater than the average total quantity sold per product? Include all catalog products in the average, treating unsold products as having zero units sold. Show product ID, name, and total quantity sold.","SELECT p.id, p.name, SUM(o.quantity) FROM products p LEFT JOIN orders o ON p.id = o.product_id GROUP BY p.id ORDER BY SUM(o.quantity) DESC","SELECT p.id, p.name, SUM(o.quantity) FROM products p LEFT JOIN orders o ON p.id = o.product_id GROUP BY p.id ORDER BY SUM(o.quantity) DESC;",False,wrong_result,994.99,331,37,56.18,
+llama3.2:3b,50,test,hard,Find customers who placed orders in 2024 but none in 2025. Show each qualifying customer once as customer ID followed by name.,"SELECT DISTINCT customer_id, name FROM customers WHERE id IN (SELECT customer_id FROM orders WHERE order_date LIKE '%/%/24' EXCEPT SELECT customer_id FROM orders WHERE order_date LIKE '%/%/25')","SELECT DISTINCT customer_id, name FROM customers WHERE id IN (SELECT customer_id FROM orders WHERE order_date LIKE '%/%/24' EXCEPT SELECT customer_id FROM orders WHERE order_date LIKE '%/%/25');",False,execution_error,994.77,313,43,55.9,no such column: customer_id
+phi4-mini,1,test,easy,How many customers live in Tunisia?,"SELECT COUNT(*) AS customer_count
+FROM customers
+WHERE country = 'Tunisia';","SELECT COUNT(*) AS customer_count
+FROM customers
+WHERE country = 'Tunisia';",True,correct,9559.35,269,18,30.34,
+phi4-mini,2,test,easy,List the names of customers from Italy.,"```sql
+SELECT name FROM customers WHERE country = 'Italy';
+```",SELECT name FROM customers WHERE country = 'Italy';,True,correct,655.55,270,15,30.63,
+phi4-mini,3,test,easy,"Which products belong to the Sports category? Show their names and prices, in that order.","```sql
+SELECT name, price FROM products WHERE category = 'Sports' ORDER BY price;
+```","SELECT name, price FROM products WHERE category = 'Sports' ORDER BY price;",True,correct,943.35,280,21,30.51,
+phi4-mini,4,test,easy,"Show the names and prices of products costing less than 50, with the name first.","```sql
+SELECT name, price FROM products WHERE price < 50 ORDER BY name;
+```","SELECT name, price FROM products WHERE price < 50 ORDER BY name;",True,correct,818.35,280,20,33.19,
+phi4-mini,5,test,easy,How many products cost at least 100?,"```sql
+SELECT COUNT(*) AS product_count
+FROM products
+WHERE price >= 100;
+```","SELECT COUNT(*) AS product_count
+FROM products
+WHERE price >= 100;",True,correct,787.58,271,21,32.87,
+phi4-mini,6,test,easy,What is the average price of a Furniture product?,"```sql
+SELECT AVG(price) AS average_price
+FROM products
+WHERE category = 'Furniture';
+```","SELECT AVG(price) AS average_price
+FROM products
+WHERE category = 'Furniture';",True,correct,825.17,272,22,32.88,
+phi4-mini,7,test,easy,Give the lowest product price in the catalog.,"```sql
+SELECT MIN(price) AS lowest_price FROM products;
+```",SELECT MIN(price) AS lowest_price FROM products;,True,correct,656.04,271,15,30.41,
+phi4-mini,8,test,easy,What is the highest price among Clothing products?,SELECT MAX(price) AS highest_price FROM products WHERE category = 'Clothing';,SELECT MAX(price) AS highest_price FROM products WHERE category = 'Clothing';,True,correct,705.83,271,17,32.14,
+phi4-mini,9,test,easy,"How many orders were placed during February 2024, including February 29?","```sql
+SELECT COUNT(*) AS total_orders
+FROM orders
+WHERE strftime('%Y-%m', order_date) = '2024-02';
+```","SELECT COUNT(*) AS total_orders
+FROM orders
+WHERE strftime('%Y-%m', order_date) = '2024-02';",True,correct,1235.87,278,33,32.46,
+phi4-mini,10,test,easy,"List order IDs and dates for purchases made from June 1 through June 30, 2025, inclusive, with the ID first.","```sql
+SELECT orders.id, orders.order_date
+FROM orders
+WHERE order_date BETWEEN '2025-06-01' AND '2025-06-30'
+ORDER BY orders.id;
+```","SELECT orders.id, orders.order_date
+FROM orders
+WHERE order_date BETWEEN '2025-06-01' AND '2025-06-30'
+ORDER BY orders.id;",True,correct,1622.68,290,42,31.63,
+phi4-mini,11,test,easy,What is the total quantity across orders placed in 2024?,"```sql
+SELECT SUM(quantity) AS total_quantity
+FROM orders
+WHERE strftime('%Y', order_date) = '2024';
+```","SELECT SUM(quantity) AS total_quantity
+FROM orders
+WHERE strftime('%Y', order_date) = '2024';",True,correct,1184.96,275,30,30.34,
+phi4-mini,12,test,easy,How many orders have a quantity of at least four?,"SELECT COUNT(*) AS order_count
+FROM orders
+WHERE quantity >= 4;","SELECT COUNT(*) AS order_count
+FROM orders
+WHERE quantity >= 4;",True,correct,687.38,273,17,32.86,
+phi4-mini,13,test,easy,"Show each different customer country once, in alphabetical order.","```sql
+SELECT DISTINCT country
+FROM customers
+ORDER BY country ASC;
+```","SELECT DISTINCT country
+FROM customers
+ORDER BY country ASC;",True,correct,788.15,273,17,30.05,
+phi4-mini,14,test,easy,"Find the three cheapest products. Display product ID, name, and price, ordered from lowest price to highest, with smaller product IDs first when prices tie.","```sql
+SELECT id, name, price
+FROM products
+ORDER BY price ASC, id ASC
+LIMIT 3;
+```","SELECT id, name, price
+FROM products
+ORDER BY price ASC, id ASC
+LIMIT 3;",True,correct,1129.93,293,27,32.35,
+phi4-mini,15,test,easy,"Which product has the highest price? If prices tie, choose the smallest product ID. Show its name followed by its price.","```sql
+SELECT name, price
+FROM products
+ORDER BY price DESC, id ASC
+LIMIT 1;
+```","SELECT name, price
+FROM products
+ORDER BY price DESC, id ASC
+LIMIT 1;",True,correct,1063.53,287,25,32.17,
+phi4-mini,16,test,easy,On what date was the earliest order placed? Show only the date.,"```sql
+SELECT MIN(order_date) AS earliest_order_date
+FROM orders;
+```","SELECT MIN(order_date) AS earliest_order_date
+FROM orders;",True,correct,710.33,276,18,33.25,
+phi4-mini,17,test,easy,"List the names of products priced from 50 to 100, including both endpoints.","```sql
+SELECT name FROM products WHERE price BETWEEN 50 AND 100;
+```",SELECT name FROM products WHERE price BETWEEN 50 AND 100;,True,correct,766.49,279,18,33.07,
+phi4-mini,18,test,easy,How many customers are from either Germany or Spain?,"SELECT COUNT(*) AS customer_count
+FROM customers
+WHERE country IN ('Germany', 'Spain');","SELECT COUNT(*) AS customer_count
+FROM customers
+WHERE country IN ('Germany', 'Spain');",True,correct,755.29,272,20,32.85,
+phi4-mini,19,test,easy,What is the average quantity per order?,"```sql
+SELECT AVG(quantity) AS average_quantity_per_order
+FROM orders;
+```","SELECT AVG(quantity) AS average_quantity_per_order
+FROM orders;",True,correct,684.82,270,18,32.89,
+phi4-mini,20,test,easy,"Show the five most recent orders as order ID followed by order date. Sort newest dates first, and smaller order IDs first for orders on the same date.","```sql
+SELECT id AS order_id, order_date
+FROM orders
+ORDER BY order_date DESC, id ASC
+LIMIT 5;
+```","SELECT id AS order_id, order_date
+FROM orders
+ORDER BY order_date DESC, id ASC
+LIMIT 5;",True,correct,1221.19,293,30,32.21,
+phi4-mini,21,test,medium,"For orders placed by customers from Tunisia, list the order ID, customer name, and order date, in that order.","```sql
+SELECT orders.id AS order_id, customers.name AS customer_name, orders.order_date
+FROM orders
+JOIN customers ON orders.customer_id = customers.id
+WHERE customers.country = 'Tunisia'
+ORDER BY orders.id;
+```","SELECT orders.id AS order_id, customers.name AS customer_name, orders.order_date
+FROM orders
+JOIN customers ON orders.customer_id = customers.id
+WHERE customers.country = 'Tunisia'
+ORDER BY orders.id;",True,correct,1782.97,286,48,31.83,
+phi4-mini,22,test,medium,"Show the order ID, product name, and quantity for orders of Furniture products, in that order.","```sql
+SELECT orders.id AS order_id, products.name AS product_name, orders.quantity
+FROM orders
+JOIN products ON orders.product_id = products.id
+WHERE products.category = 'Furniture'
+ORDER BY orders.id;
+```","SELECT orders.id AS order_id, products.name AS product_name, orders.quantity
+FROM orders
+JOIN products ON orders.product_id = products.id
+WHERE products.category = 'Furniture'
+ORDER BY orders.id;",True,correct,1662.2,282,46,32.01,
+phi4-mini,23,test,medium,Which customers have ordered the product named Laptop? List each customer once by customer ID followed by name.,"```sql
+SELECT DISTINCT c.id, c.name
+FROM customers c
+JOIN orders o ON c.id = o.customer_id
+JOIN products p ON o.product_id = p.id
+WHERE p.name = 'Laptop'
+ORDER BY c.id;
+```","SELECT DISTINCT c.id, c.name
+FROM customers c
+JOIN orders o ON c.id = o.customer_id
+JOIN products p ON o.product_id = p.id
+WHERE p.name = 'Laptop'
+ORDER BY c.id;",True,correct,1820.23,282,51,31.98,
+phi4-mini,24,test,medium,"For every customer, including those with no orders, show customer ID, name, and number of orders. Customers without orders should have a count of zero.","```sql
+SELECT c.id AS customer_id, c.name, COUNT(o.id) AS order_count
+FROM customers c
+LEFT JOIN orders o ON c.id = o.customer_id
+GROUP BY c.id, c.name
+```","SELECT c.id AS customer_id, c.name, COUNT(o.id) AS order_count
+FROM customers c
+LEFT JOIN orders o ON c.id = o.customer_id
+GROUP BY c.id, c.name;",True,correct,1762.64,293,47,31.87,
+phi4-mini,25,test,medium,"For each product sold in 2025, report its product ID, name, and total quantity sold during that year.","```sql
+SELECT p.id, p.name, SUM(o.quantity) AS total_quantity
+FROM products p
+JOIN orders o ON p.id = o.product_id
+WHERE strftime('%Y', o.order_date) = '2025'
+GROUP BY p.id, p.name
+ORDER BY p.id;
+```","SELECT p.id, p.name, SUM(o.quantity) AS total_quantity
+FROM products p
+JOIN orders o ON p.id = o.product_id
+WHERE strftime('%Y', o.order_date) = '2025'
+GROUP BY p.id, p.name
+ORDER BY p.id;",True,correct,2264.71,286,63,31.7,
+phi4-mini,26,test,medium,How many customers are registered in each country? Show country followed by customer count.,"```sql
+SELECT country, COUNT(*) AS customer_count
+FROM customers
+GROUP BY country
+ORDER BY country;
+```","SELECT country, COUNT(*) AS customer_count
+FROM customers
+GROUP BY country
+ORDER BY country;",True,correct,984.52,278,25,32.4,
+phi4-mini,27,test,medium,What is the average catalog price in each product category? Display category followed by average price.,"```sql
+SELECT category, AVG(price) AS average_price
+FROM products
+GROUP BY category
+ORDER BY category;
+```","SELECT category, AVG(price) AS average_price
+FROM products
+GROUP BY category
+ORDER BY category;",True,correct,1029.58,280,26,32.22,
+phi4-mini,28,test,medium,"For each country whose customers have placed orders, show the country and its total number of orders.","```sql
+SELECT c.country, COUNT(o.id) AS total_orders
+FROM customers c
+JOIN orders o ON c.id = o.customer_id
+GROUP BY c.country;
+```","SELECT c.country, COUNT(o.id) AS total_orders
+FROM customers c
+JOIN orders o ON c.id = o.customer_id
+GROUP BY c.country;",True,correct,1386.16,281,37,31.93,
+phi4-mini,29,test,medium,"How many distinct customers have purchased an Electronics product? Count each customer ID once, even if they made several purchases.","SELECT COUNT(DISTINCT customer_id) AS distinct_customers
+FROM orders
+JOIN products ON orders.product_id = products.id
+WHERE products.category = 'Electronics';","SELECT COUNT(DISTINCT customer_id) AS distinct_customers
+FROM orders
+JOIN products ON orders.product_id = products.id
+WHERE products.category = 'Electronics';",True,correct,1391.12,285,35,31.49,
+phi4-mini,30,test,medium,"Which customers placed at least six orders? Display customer ID, name, and order count.","```sql
+SELECT c.id, c.name, COUNT(o.id) AS order_count
+FROM customers c
+JOIN orders o ON c.id = o.customer_id
+GROUP BY c.id, c.name
+HAVING COUNT(o.id) >= 6;
+```","SELECT c.id, c.name, COUNT(o.id) AS order_count
+FROM customers c
+JOIN orders o ON c.id = o.customer_id
+GROUP BY c.id, c.name
+HAVING COUNT(o.id) >= 6;",True,correct,1902.21,280,53,31.54,
+phi4-mini,31,test,medium,"Identify products with more than 150 units sold across all orders. Show product ID, product name, and total units sold.","```sql
+SELECT p.id, p.name, SUM(o.quantity) AS total_units_sold
+FROM products p
+JOIN orders o ON p.id = o.product_id
+GROUP BY p.id, p.name
+HAVING SUM(o.quantity) > 150
+ORDER BY total_units_sold DESC;
+```","SELECT p.id, p.name, SUM(o.quantity) AS total_units_sold
+FROM products p
+JOIN orders o ON p.id = o.product_id
+GROUP BY p.id, p.name
+HAVING SUM(o.quantity) > 150
+ORDER BY total_units_sold DESC;",True,correct,2306.37,287,63,31.36,
+phi4-mini,32,test,medium,"What revenue came from orders placed in 2024? Revenue is product price multiplied by quantity, totaled across those orders. Show only the total revenue without rounding.","```sql
+SELECT SUM(p.price * o.quantity) AS total_revenue
+FROM orders o
+JOIN products p ON o.product_id = p.id
+WHERE strftime('%Y', o.order_date) = '2024';
+```","SELECT SUM(p.price * o.quantity) AS total_revenue
+FROM orders o
+JOIN products p ON o.product_id = p.id
+WHERE strftime('%Y', o.order_date) = '2024';",True,correct,1804.66,294,48,31.57,
+phi4-mini,33,test,medium,"Report revenue for each product category with orders in 2025. Revenue is product price multiplied by quantity. Show category followed by total revenue for that year, without rounding.","```sql
+SELECT p.category, SUM(p.price * o.quantity) AS total_revenue
+FROM orders o
+JOIN products p ON o.product_id = p.id
+WHERE strftime('%Y', o.order_date) = '2025'
+GROUP BY p.category
+ORDER BY total_revenue DESC;
+```","SELECT p.category, SUM(p.price * o.quantity) AS total_revenue
+FROM orders o
+JOIN products p ON o.product_id = p.id
+WHERE strftime('%Y', o.order_date) = '2025'
+GROUP BY p.category
+ORDER BY total_revenue DESC;",True,correct,2298.06,296,63,31.32,
+phi4-mini,34,test,medium,"Which five customers placed the most orders in 2024? Show customer ID, name, and order count for customers with orders that year, sorted by count from highest to lowest and then by customer ID from smallest to largest.","```sql
+SELECT c.id, c.name, COUNT(o.id) AS order_count
+FROM customers c
+JOIN orders o ON c.id = o.customer_id
+WHERE strftime('%Y', o.order_date) = '2024'
+GROUP BY c.id
+ORDER BY order_count DESC, c.id
+LIMIT 5;
+```","SELECT c.id, c.name, COUNT(o.id) AS order_count
+FROM customers c
+JOIN orders o ON c.id = o.customer_id
+WHERE strftime('%Y', o.order_date) = '2024'
+GROUP BY c.id
+ORDER BY order_count DESC, c.id
+LIMIT 5;",True,correct,2514.84,307,68,31.23,
+phi4-mini,35,test,medium,"Among products with at least one order, which has the smallest total quantity sold? Break ties using the smallest product ID. Give product ID, name, and total quantity sold.","```sql
+SELECT p.id, p.name, SUM(o.quantity) AS total_quantity_sold
+FROM products p
+JOIN orders o ON p.id = o.product_id
+GROUP BY p.id, p.name
+ORDER BY total_quantity_sold ASC, p.id ASC
+LIMIT 1;
+```","SELECT p.id, p.name, SUM(o.quantity) AS total_quantity_sold
+FROM products p
+JOIN orders o ON p.id = o.product_id
+GROUP BY p.id, p.name
+ORDER BY total_quantity_sold ASC, p.id ASC
+LIMIT 1;",True,correct,2253.76,297,61,31.04,
+phi4-mini,36,test,medium,"For each month of 2025 that contains orders, show the month as YYYY-MM followed by its order count. List months from earliest to latest.","```sql
+SELECT strftime('%Y-%m', order_date) AS month, COUNT(*) AS order_count
+FROM orders
+WHERE strftime('%Y', order_date) = '2025'
+GROUP BY month
+ORDER BY month;
+```","SELECT strftime('%Y-%m', order_date) AS month, COUNT(*) AS order_count
+FROM orders
+WHERE strftime('%Y', order_date) = '2025'
+GROUP BY month
+ORDER BY month;",True,correct,1841.01,292,50,31.28,
+phi4-mini,37,test,medium,"For each customer who has ordered, show customer ID, name, and the date of their most recent order.","```sql
+SELECT c.id, c.name, MAX(o.order_date) AS most_recent_order_date
+FROM customers c
+JOIN orders o ON c.id = o.customer_id
+GROUP BY c.id, c.name
+ORDER BY most_recent_order_date DESC
+```","SELECT c.id, c.name, MAX(o.order_date) AS most_recent_order_date
+FROM customers c
+JOIN orders o ON c.id = o.customer_id
+GROUP BY c.id, c.name
+ORDER BY most_recent_order_date DESC;",True,correct,1964.71,284,54,31.22,
+phi4-mini,38,test,medium,Which countries have at least 50 registered customers? Give the country and customer count.,"```sql
+SELECT country, COUNT(*) AS customer_count
+FROM customers
+GROUP BY country
+HAVING COUNT(*) >= 50;
+```","SELECT country, COUNT(*) AS customer_count
+FROM customers
+GROUP BY country
+HAVING COUNT(*) >= 50;",True,correct,1137.19,279,29,31.71,
+phi4-mini,39,test,medium,"List customers who have never placed an order, showing customer ID followed by name.","SELECT c.id, c.name
+FROM customers c
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM orders o
+    WHERE o.customer_id = c.id
+)","SELECT c.id, c.name
+FROM customers c
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM orders o
+    WHERE o.customer_id = c.id
+);",True,correct,1362.44,278,36,31.57,
+phi4-mini,40,test,medium,"For each product category purchased by customers from France, show the category and total quantity those customers ordered.","```sql
+SELECT p.category, SUM(o.quantity) AS total_quantity
+FROM orders o
+JOIN customers c ON o.customer_id = c.id
+JOIN products p ON o.product_id = p.id
+WHERE c.country = 'France'
+GROUP BY p.category;
+```","SELECT p.category, SUM(o.quantity) AS total_quantity
+FROM orders o
+JOIN customers c ON o.customer_id = c.id
+JOIN products p ON o.product_id = p.id
+WHERE c.country = 'France'
+GROUP BY p.category;",True,correct,1985.96,282,55,31.51,
+phi4-mini,41,test,medium,"For each country with orders, how many distinct customers placed orders during 2025? Show country followed by that customer count, omitting countries with no orders in that year.","```sql
+SELECT c.country, COUNT(DISTINCT o.customer_id) AS customer_count
+FROM customers c
+JOIN orders o ON c.id = o.customer_id
+WHERE strftime('%Y', o.order_date) = '2025'
+GROUP BY c.country
+ORDER BY c.country;
+```","SELECT c.country, COUNT(DISTINCT o.customer_id) AS customer_count
+FROM customers c
+JOIN orders o ON c.id = o.customer_id
+WHERE strftime('%Y', o.order_date) = '2025'
+GROUP BY c.country
+ORDER BY c.country;",True,correct,2236.77,297,61,31.27,
+phi4-mini,42,test,medium,"Which products were ordered at least once from July 1 through December 31, 2024, inclusive? List each product once as product ID followed by name.","```sql
+SELECT DISTINCT p.id, p.name
+FROM products p
+JOIN orders o ON p.id = o.product_id
+WHERE o.order_date BETWEEN '2024-07-01' AND '2024-12-31'
+ORDER BY p.id;
+```","SELECT DISTINCT p.id, p.name
+FROM products p
+JOIN orders o ON p.id = o.product_id
+WHERE o.order_date BETWEEN '2024-07-01' AND '2024-12-31'
+ORDER BY p.id;",True,correct,2039.99,295,55,31.38,
+phi4-mini,43,test,hard,"Among customers who ordered in 2025, which spent more that year than the average total spending of those customers? Spending is product price multiplied by quantity. Show customer ID, name, and total spending in 2025 without rounding.","```sql
+SELECT c.id, c.name, SUM(p.price * o.quantity) AS total_spending
+FROM customers c
+JOIN orders o ON c.id = o.customer_id
+JOIN products p ON o.product_id = p.id
+WHERE strftime('%Y', o.order_date) = '2025'
+GROUP BY c.id, c.name
+HAVING SUM(p.price * o.quantity) > (
+    SELECT AVG(total_spending)
+    FROM (
+        SELECT SUM(p.price * o.quantity) AS total_spending
+        FROM customers c
+        JOIN orders o ON c.id = o.customer_id
+        JOIN products p ON o.product_id = p.id
+        WHERE strftime('%Y', o.order_date) = '2025'
+        GROUP BY c.id
+    ) AS subquery
+)
+ORDER BY total_spending DESC;
+```","SELECT c.id, c.name, SUM(p.price * o.quantity) AS total_spending
+FROM customers c
+JOIN orders o ON c.id = o.customer_id
+JOIN products p ON o.product_id = p.id
+WHERE strftime('%Y', o.order_date) = '2025'
+GROUP BY c.id, c.name
+HAVING SUM(p.price * o.quantity) > (
+    SELECT AVG(total_spending)
+    FROM (
+        SELECT SUM(p.price * o.quantity) AS total_spending
+        FROM customers c
+        JOIN orders o ON c.id = o.customer_id
+        JOIN products p ON o.product_id = p.id
+        WHERE strftime('%Y', o.order_date) = '2025'
+        GROUP BY c.id
+    ) AS subquery
+)
+ORDER BY total_spending DESC;",True,correct,6015.8,309,173,30.9,
+phi4-mini,44,test,hard,"Which products cost more than the average catalog price within their own category? Show product ID, name, category, and price, in that order.","```sql
+SELECT p.id, p.name, p.category, p.price
+FROM products p
+WHERE p.price > (
+    SELECT AVG(p2.price)
+    FROM products p2
+    WHERE p2.category = p.category
+)
+ORDER BY p.category, p.price DESC;
+```","SELECT p.id, p.name, p.category, p.price
+FROM products p
+WHERE p.price > (
+    SELECT AVG(p2.price)
+    FROM products p2
+    WHERE p2.category = p.category
+)
+ORDER BY p.category, p.price DESC;",True,correct,2235.72,291,59,31.26,
+phi4-mini,45,test,hard,"Which country generated the most revenue from orders in 2024? Attribute each order to its customer country and calculate revenue as product price multiplied by quantity. For equal totals, choose the country first alphabetically. Show country followed by total revenue without rounding.","```sql
+SELECT c.country, SUM(p.price * o.quantity) AS total_revenue
+FROM orders o
+JOIN customers c ON o.customer_id = c.id
+JOIN products p ON o.product_id = p.id
+WHERE strftime('%Y', o.order_date) = '2024'
+GROUP BY c.country
+ORDER BY total_revenue DESC, c.country ASC
+LIMIT 1;
+```","SELECT c.country, SUM(p.price * o.quantity) AS total_revenue
+FROM orders o
+JOIN customers c ON o.customer_id = c.id
+JOIN products p ON o.product_id = p.id
+WHERE strftime('%Y', o.order_date) = '2024'
+GROUP BY c.country
+ORDER BY total_revenue DESC, c.country ASC
+LIMIT 1;",True,correct,3044.44,312,82,31.21,
+phi4-mini,46,test,hard,"Among customers from Germany who have ordered, who has the highest total spending across all orders? Spending is product price multiplied by quantity. Break ties with the smallest customer ID. Show customer ID, name, and total spending without rounding.","```sql
+SELECT c.id, c.name, SUM(p.price * o.quantity) AS total_spending
+FROM customers c
+JOIN orders o ON c.id = o.customer_id
+JOIN products p ON o.product_id = p.id
+WHERE c.country = 'Germany'
+GROUP BY c.id, c.name
+ORDER BY total_spending DESC, c.id
+LIMIT 1;
+```","SELECT c.id, c.name, SUM(p.price * o.quantity) AS total_spending
+FROM customers c
+JOIN orders o ON c.id = o.customer_id
+JOIN products p ON o.product_id = p.id
+WHERE c.country = 'Germany'
+GROUP BY c.id, c.name
+ORDER BY total_spending DESC, c.id
+LIMIT 1;",True,correct,2870.39,308,79,31.21,
+phi4-mini,47,test,hard,"Which product reached the most distinct customers during 2025? Count each customer ID once per product and consider only products ordered that year. If counts tie, select the smallest product ID. Show product ID, name, and distinct customer count.","```sql
+SELECT p.id, p.name, COUNT(DISTINCT o.customer_id) AS distinct_customer_count
+FROM products p
+JOIN orders o ON p.id = o.product_id
+WHERE strftime('%Y', o.order_date) = '2025'
+GROUP BY p.id, p.name
+ORDER BY distinct_customer_count DESC, p.id
+LIMIT 1;
+```","SELECT p.id, p.name, COUNT(DISTINCT o.customer_id) AS distinct_customer_count
+FROM products p
+JOIN orders o ON p.id = o.product_id
+WHERE strftime('%Y', o.order_date) = '2025'
+GROUP BY p.id, p.name
+ORDER BY distinct_customer_count DESC, p.id
+LIMIT 1;",True,correct,2886.42,310,77,31.21,
+phi4-mini,48,test,hard,"Identify customers who bought at least one Electronics product and at least one Furniture product at any time. List each qualifying customer once, showing customer ID and name.","```sql
+SELECT DISTINCT c.id, c.name
+FROM customers c
+JOIN orders o ON c.id = o.customer_id
+JOIN products p ON o.product_id = p.id
+WHERE p.category IN ('Electronics', 'Furniture')
+GROUP BY c.id, c.name
+HAVING COUNT(DISTINCT p.category) = 2;
+```","SELECT DISTINCT c.id, c.name
+FROM customers c
+JOIN orders o ON c.id = o.customer_id
+JOIN products p ON o.product_id = p.id
+WHERE p.category IN ('Electronics', 'Furniture')
+GROUP BY c.id, c.name
+HAVING COUNT(DISTINCT p.category) = 2;",True,correct,2566.04,293,71,31.19,
+phi4-mini,49,test,hard,"Which products have a total quantity sold greater than the average total quantity sold per product? Include all catalog products in the average, treating unsold products as having zero units sold. Show product ID, name, and total quantity sold.","```sql
+SELECT p.id, p.name, COALESCE(SUM(o.quantity), 0) AS total_quantity_sold
+FROM products p
+LEFT JOIN orders o ON p.id = o.product_id
+GROUP BY p.id
+HAVING COALESCE(SUM(o.quantity), 0) > (
+    SELECT AVG(total_quantity) FROM (
+        SELECT COALESCE(SUM(o.quantity), 0) AS total_quantity
+        FROM products p
+        LEFT JOIN orders o ON p.id = o.product_id
+        GROUP BY p.id
+    ) AS subquery
+)
+ORDER BY total_quantity_sold DESC;
+```","SELECT p.id, p.name, COALESCE(SUM(o.quantity), 0) AS total_quantity_sold
+FROM products p
+LEFT JOIN orders o ON p.id = o.product_id
+GROUP BY p.id
+HAVING COALESCE(SUM(o.quantity), 0) > (
+    SELECT AVG(total_quantity) FROM (
+        SELECT COALESCE(SUM(o.quantity), 0) AS total_quantity
+        FROM products p
+        LEFT JOIN orders o ON p.id = o.product_id
+        GROUP BY p.id
+    ) AS subquery
+)
+ORDER BY total_quantity_sold DESC;",True,correct,4508.47,308,129,30.93,
+phi4-mini,50,test,hard,Find customers who placed orders in 2024 but none in 2025. Show each qualifying customer once as customer ID followed by name.,"```sql
+SELECT c.id, c.name
+FROM customers c
+WHERE c.id IN (
+    SELECT o.customer_id
+    FROM orders o
+    WHERE strftime('%Y', o.order_date) = '2024'
+)
+AND c.id NOT IN (
+    SELECT o.customer_id
+    FROM orders o
+    WHERE strftime('%Y', o.order_date) = '2025'
+)
+ORDER BY c.id;
+```","SELECT c.id, c.name
+FROM customers c
+WHERE c.id IN (
+    SELECT o.customer_id
+    FROM orders o
+    WHERE strftime('%Y', o.order_date) = '2024'
+)
+AND c.id NOT IN (
+    SELECT o.customer_id
+    FROM orders o
+    WHERE strftime('%Y', o.order_date) = '2025'
+)
+ORDER BY c.id;",True,correct,3160.02,290,88,31.0,
+qwen3:8b,1,test,easy,How many customers live in Tunisia?,SELECT COUNT(*) FROM customers WHERE country = 'Tunisia';,SELECT COUNT(*) FROM customers WHERE country = 'Tunisia';,True,correct,2923.6,283,14,7.42,
+qwen3:8b,2,test,easy,List the names of customers from Italy.,"SELECT customers.name
+FROM customers
+WHERE customers.country = 'Italy';","SELECT customers.name
+FROM customers
+WHERE customers.country = 'Italy';",True,correct,2689.32,284,15,8.58,
+qwen3:8b,3,test,easy,"Which products belong to the Sports category? Show their names and prices, in that order.","SELECT name, price FROM products WHERE category = 'Sports' ORDER BY name;","SELECT name, price FROM products WHERE category = 'Sports' ORDER BY name;",True,correct,3179.59,294,17,8.61,
+qwen3:8b,4,test,easy,"Show the names and prices of products costing less than 50, with the name first.","SELECT name, price FROM products WHERE price < 50 ORDER BY name","SELECT name, price FROM products WHERE price < 50 ORDER BY name;",True,correct,2699.85,295,16,8.54,
+qwen3:8b,5,test,easy,How many products cost at least 100?,SELECT COUNT(*) FROM products WHERE price >= 100;,SELECT COUNT(*) FROM products WHERE price >= 100;,True,correct,2454.46,287,14,8.73,
+qwen3:8b,6,test,easy,What is the average price of a Furniture product?,SELECT AVG(price) FROM products WHERE category = 'Furniture';,SELECT AVG(price) FROM products WHERE category = 'Furniture';,True,correct,2445.54,286,14,8.76,
+qwen3:8b,7,test,easy,Give the lowest product price in the catalog.,SELECT MIN(price) FROM products;,SELECT MIN(price) FROM products;,True,correct,1711.19,285,8,9.27,
+qwen3:8b,8,test,easy,What is the highest price among Clothing products?,SELECT MAX(price) FROM products WHERE category = 'Clothing';,SELECT MAX(price) FROM products WHERE category = 'Clothing';,True,correct,2394.35,285,14,8.77,
+qwen3:8b,9,test,easy,"How many orders were placed during February 2024, including February 29?","SELECT COUNT(*) 
+FROM orders 
+WHERE order_date BETWEEN '2024-02-01' AND '2024-02-29'","SELECT COUNT(*) 
+FROM orders 
+WHERE order_date BETWEEN '2024-02-01' AND '2024-02-29';",True,correct,5304.73,295,37,8.22,
+qwen3:8b,10,test,easy,"List order IDs and dates for purchases made from June 1 through June 30, 2025, inclusive, with the ID first.","SELECT id, order_date FROM orders WHERE order_date BETWEEN '2025-06-01' AND '2025-06-30' ORDER BY id;","SELECT id, order_date FROM orders WHERE order_date BETWEEN '2025-06-01' AND '2025-06-30' ORDER BY id;",True,correct,6055.16,307,41,8.12,
+qwen3:8b,11,test,easy,What is the total quantity across orders placed in 2024?,SELECT SUM(quantity) FROM orders WHERE order_date LIKE '2024%';,SELECT SUM(quantity) FROM orders WHERE order_date LIKE '2024%';,True,correct,3427.38,291,18,7.85,
+qwen3:8b,12,test,easy,How many orders have a quantity of at least four?,SELECT COUNT(*) FROM orders WHERE quantity >= 4;,SELECT COUNT(*) FROM orders WHERE quantity >= 4;,True,correct,2443.92,287,12,8.42,
+qwen3:8b,13,test,easy,"Show each different customer country once, in alphabetical order.",SELECT DISTINCT country FROM customers ORDER BY country;,SELECT DISTINCT country FROM customers ORDER BY country;,True,correct,2139.73,287,10,8.7,
+qwen3:8b,14,test,easy,"Find the three cheapest products. Display product ID, name, and price, ordered from lowest price to highest, with smaller product IDs first when prices tie.","SELECT id, name, price
+FROM products
+ORDER BY price ASC, id ASC
+LIMIT 3","SELECT id, name, price
+FROM products
+ORDER BY price ASC, id ASC
+LIMIT 3;",True,correct,3680.96,307,22,8.14,
+qwen3:8b,15,test,easy,"Which product has the highest price? If prices tie, choose the smallest product ID. Show its name followed by its price.","SELECT name, price
+FROM products
+ORDER BY price DESC, id ASC
+LIMIT 1","SELECT name, price
+FROM products
+ORDER BY price DESC, id ASC
+LIMIT 1;",True,correct,3373.01,301,20,8.22,
+qwen3:8b,16,test,easy,On what date was the earliest order placed? Show only the date.,SELECT MIN(order_date) FROM orders;,SELECT MIN(order_date) FROM orders;,True,correct,2149.67,290,9,8.81,
+qwen3:8b,17,test,easy,"List the names of products priced from 50 to 100, including both endpoints.",SELECT name FROM products WHERE price BETWEEN 50 AND 100;,SELECT name FROM products WHERE price BETWEEN 50 AND 100;,True,correct,3001.47,296,17,8.16,
+qwen3:8b,18,test,easy,How many customers are from either Germany or Spain?,"SELECT COUNT(DISTINCT id) FROM customers WHERE country IN ('Germany', 'Spain')","SELECT COUNT(DISTINCT id) FROM customers WHERE country IN ('Germany', 'Spain');",True,correct,3437.75,286,19,7.82,
+qwen3:8b,19,test,easy,What is the average quantity per order?,SELECT AVG(quantity) FROM orders;,SELECT AVG(quantity) FROM orders;,True,correct,1875.79,284,8,8.55,
+qwen3:8b,20,test,easy,"Show the five most recent orders as order ID followed by order date. Sort newest dates first, and smaller order IDs first for orders on the same date.","SELECT id, order_date
+FROM orders
+ORDER BY order_date DESC, id ASC
+LIMIT 5","SELECT id, order_date
+FROM orders
+ORDER BY order_date DESC, id ASC
+LIMIT 5;",True,correct,3990.63,307,22,7.45,
+qwen3:8b,21,test,medium,"For orders placed by customers from Tunisia, list the order ID, customer name, and order date, in that order.","SELECT orders.id, customers.name, orders.order_date
+FROM orders
+JOIN customers ON orders.customer_id = customers.id
+WHERE customers.country = 'Tunisia'
+ORDER BY orders.order_date;","SELECT orders.id, customers.name, orders.order_date
+FROM orders
+JOIN customers ON orders.customer_id = customers.id
+WHERE customers.country = 'Tunisia'
+ORDER BY orders.order_date;",True,correct,6105.06,300,40,7.77,
+qwen3:8b,22,test,medium,"Show the order ID, product name, and quantity for orders of Furniture products, in that order.","SELECT orders.id, products.name, orders.quantity
+FROM orders
+JOIN products ON orders.product_id = products.id
+WHERE products.category = 'Furniture'
+ORDER BY orders.id;","SELECT orders.id, products.name, orders.quantity
+FROM orders
+JOIN products ON orders.product_id = products.id
+WHERE products.category = 'Furniture'
+ORDER BY orders.id;",True,correct,5675.21,296,37,7.81,
+qwen3:8b,23,test,medium,Which customers have ordered the product named Laptop? List each customer once by customer ID followed by name.,"SELECT DISTINCT customers.id, customers.name
+FROM customers
+JOIN orders ON customers.id = orders.customer_id
+JOIN products ON orders.product_id = products.id
+WHERE products.name = 'Laptop'
+ORDER BY customers.id;","SELECT DISTINCT customers.id, customers.name
+FROM customers
+JOIN orders ON customers.id = orders.customer_id
+JOIN products ON orders.product_id = products.id
+WHERE products.name = 'Laptop'
+ORDER BY customers.id;",True,correct,6584.61,296,45,7.95,
+qwen3:8b,24,test,medium,"For every customer, including those with no orders, show customer ID, name, and number of orders. Customers without orders should have a count of zero.","SELECT customers.id, customers.name, COUNT(orders.id) AS num_orders
+FROM customers
+LEFT JOIN orders ON customers.id = orders.customer_id
+GROUP BY customers.id
+ORDER BY customers.id;","SELECT customers.id, customers.name, COUNT(orders.id) AS num_orders
+FROM customers
+LEFT JOIN orders ON customers.id = orders.customer_id
+GROUP BY customers.id
+ORDER BY customers.id;",True,correct,6275.6,307,41,7.8,
+qwen3:8b,25,test,medium,"For each product sold in 2025, report its product ID, name, and total quantity sold during that year.","SELECT products.id, products.name, SUM(orders.quantity) 
+FROM products 
+JOIN orders ON products.id = orders.product_id 
+WHERE order_date LIKE '2025%' 
+GROUP BY products.id, products.name;","SELECT products.id, products.name, SUM(orders.quantity) 
+FROM products 
+JOIN orders ON products.id = orders.product_id 
+WHERE order_date LIKE '2025%' 
+GROUP BY products.id, products.name;",True,correct,6895.34,302,46,7.73,
+qwen3:8b,26,test,medium,How many customers are registered in each country? Show country followed by customer count.,"SELECT country, COUNT(*) AS customer_count
+FROM customers
+GROUP BY country;","SELECT country, COUNT(*) AS customer_count
+FROM customers
+GROUP BY country;",True,correct,3233.64,292,17,8.36,
+qwen3:8b,27,test,medium,What is the average catalog price in each product category? Display category followed by average price.,"SELECT products.category, AVG(products.price) 
+FROM products 
+GROUP BY products.category;","SELECT products.category, AVG(products.price) 
+FROM products 
+GROUP BY products.category;",True,correct,3474.58,294,18,8.26,
+qwen3:8b,28,test,medium,"For each country whose customers have placed orders, show the country and its total number of orders.","SELECT country, COUNT(DISTINCT orders.id) AS total_orders
+FROM customers
+JOIN orders ON customers.id = orders.customer_id
+GROUP BY country;","SELECT country, COUNT(DISTINCT orders.id) AS total_orders
+FROM customers
+JOIN orders ON customers.id = orders.customer_id
+GROUP BY country;",True,correct,4861.27,295,32,8.0,
+qwen3:8b,29,test,medium,"How many distinct customers have purchased an Electronics product? Count each customer ID once, even if they made several purchases.","SELECT COUNT(DISTINCT orders.customer_id)
+FROM orders
+JOIN products ON orders.product_id = products.id
+WHERE products.category = 'Electronics';","SELECT COUNT(DISTINCT orders.customer_id)
+FROM orders
+JOIN products ON orders.product_id = products.id
+WHERE products.category = 'Electronics';",True,correct,4769.66,299,31,8.04,
+qwen3:8b,30,test,medium,"Which customers placed at least six orders? Display customer ID, name, and order count.","SELECT customers.id, customers.name, COUNT(orders.id) AS order_count
+FROM customers
+JOIN orders ON customers.id = orders.customer_id
+GROUP BY customers.id
+HAVING COUNT(orders.id) >= 6;","SELECT customers.id, customers.name, COUNT(orders.id) AS order_count
+FROM customers
+JOIN orders ON customers.id = orders.customer_id
+GROUP BY customers.id
+HAVING COUNT(orders.id) >= 6;",True,correct,7158.82,294,46,7.83,
+qwen3:8b,31,test,medium,"Identify products with more than 150 units sold across all orders. Show product ID, product name, and total units sold.","SELECT products.id, products.name, SUM(orders.quantity) AS total_units_sold
+FROM products
+JOIN orders ON products.id = orders.product_id
+GROUP BY products.id
+HAVING SUM(orders.quantity) > 150;","SELECT products.id, products.name, SUM(orders.quantity) AS total_units_sold
+FROM products
+JOIN orders ON products.id = orders.product_id
+GROUP BY products.id
+HAVING SUM(orders.quantity) > 150;",True,correct,7382.61,304,49,7.67,
+qwen3:8b,32,test,medium,"What revenue came from orders placed in 2024? Revenue is product price multiplied by quantity, totaled across those orders. Show only the total revenue without rounding.","SELECT SUM(products.price * orders.quantity) AS total_revenue
+FROM orders
+JOIN products ON orders.product_id = products.id
+WHERE order_date LIKE '2024%'","SELECT SUM(products.price * orders.quantity) AS total_revenue
+FROM orders
+JOIN products ON orders.product_id = products.id
+WHERE order_date LIKE '2024%';",True,correct,5769.55,310,37,7.79,
+qwen3:8b,33,test,medium,"Report revenue for each product category with orders in 2025. Revenue is product price multiplied by quantity. Show category followed by total revenue for that year, without rounding.","SELECT products.category, SUM(products.price * orders.quantity) AS total_revenue
+FROM products
+JOIN orders ON products.id = orders.product_id
+WHERE orders.order_date LIKE '2025%'
+GROUP BY products.category
+ORDER BY products.category;","SELECT products.category, SUM(products.price * orders.quantity) AS total_revenue
+FROM products
+JOIN orders ON products.id = orders.product_id
+WHERE orders.order_date LIKE '2025%'
+GROUP BY products.category
+ORDER BY products.category;",True,correct,7852.23,312,51,7.66,
+qwen3:8b,34,test,medium,"Which five customers placed the most orders in 2024? Show customer ID, name, and order count for customers with orders that year, sorted by count from highest to lowest and then by customer ID from smallest to largest.","SELECT customers.id, customers.name, COUNT(orders.id) AS order_count
+FROM customers
+JOIN orders ON customers.id = orders.customer_id
+WHERE orders.order_date LIKE '2024%'
+GROUP BY customers.id
+ORDER BY order_count DESC, customers.id ASC
+LIMIT 5;","SELECT customers.id, customers.name, COUNT(orders.id) AS order_count
+FROM customers
+JOIN orders ON customers.id = orders.customer_id
+WHERE orders.order_date LIKE '2024%'
+GROUP BY customers.id
+ORDER BY order_count DESC, customers.id ASC
+LIMIT 5;",True,correct,9104.53,323,60,7.61,
+qwen3:8b,35,test,medium,"Among products with at least one order, which has the smallest total quantity sold? Break ties using the smallest product ID. Give product ID, name, and total quantity sold.","SELECT p.id, p.name, SUM(o.quantity) AS total_quantity_sold
+FROM products p
+JOIN orders o ON p.id = o.product_id
+GROUP BY p.id
+HAVING COUNT(o.id) > 0
+ORDER BY total_quantity_sold ASC, p.id ASC
+LIMIT 1;","SELECT p.id, p.name, SUM(o.quantity) AS total_quantity_sold
+FROM products p
+JOIN orders o ON p.id = o.product_id
+GROUP BY p.id
+HAVING COUNT(o.id) > 0
+ORDER BY total_quantity_sold ASC, p.id ASC
+LIMIT 1;",True,correct,8944.43,311,62,7.81,
+qwen3:8b,36,test,medium,"For each month of 2025 that contains orders, show the month as YYYY-MM followed by its order count. List months from earliest to latest.","SELECT 
+    SUBSTR(order_date, 1, 7) AS month,
+    COUNT(*) AS order_count
+FROM 
+    orders
+WHERE 
+    order_date LIKE '2025-%'
+GROUP BY 
+    SUBSTR(order_date, 1, 7)
+ORDER BY 
+    month;","SELECT 
+    SUBSTR(order_date, 1, 7) AS month,
+    COUNT(*) AS order_count
+FROM 
+    orders
+WHERE 
+    order_date LIKE '2025-%'
+GROUP BY 
+    SUBSTR(order_date, 1, 7)
+ORDER BY 
+    month;",True,correct,9356.01,308,64,7.67,
+qwen3:8b,37,test,medium,"For each customer who has ordered, show customer ID, name, and the date of their most recent order.","SELECT customers.id, customers.name, MAX(orders.order_date)
+FROM customers
+JOIN orders ON customers.id = orders.customer_id
+GROUP BY customers.id;","SELECT customers.id, customers.name, MAX(orders.order_date)
+FROM customers
+JOIN orders ON customers.id = orders.customer_id
+GROUP BY customers.id;",True,correct,4907.23,298,32,8.0,
+qwen3:8b,38,test,medium,Which countries have at least 50 registered customers? Give the country and customer count.,"SELECT country, COUNT(*) AS customer_count
+FROM customers
+GROUP BY country
+HAVING COUNT(*) >= 50;","SELECT country, COUNT(*) AS customer_count
+FROM customers
+GROUP BY country
+HAVING COUNT(*) >= 50;",True,correct,4509.51,294,26,8.08,
+qwen3:8b,39,test,medium,"List customers who have never placed an order, showing customer ID followed by name.","SELECT customers.id, customers.name
+FROM customers
+LEFT JOIN orders ON customers.id = orders.customer_id
+WHERE orders.customer_id IS NULL;","SELECT customers.id, customers.name
+FROM customers
+LEFT JOIN orders ON customers.id = orders.customer_id
+WHERE orders.customer_id IS NULL;",True,correct,4977.65,292,29,7.72,
+qwen3:8b,40,test,medium,"For each product category purchased by customers from France, show the category and total quantity those customers ordered.","SELECT products.category, SUM(orders.quantity) 
+FROM products 
+JOIN orders ON products.id = orders.product_id 
+JOIN customers ON orders.customer_id = customers.id 
+WHERE customers.country = 'France' 
+GROUP BY products.category;","SELECT products.category, SUM(orders.quantity) 
+FROM products 
+JOIN orders ON products.id = orders.product_id 
+JOIN customers ON orders.customer_id = customers.id 
+WHERE customers.country = 'France' 
+GROUP BY products.category;",True,correct,7001.8,296,47,7.77,
+qwen3:8b,41,test,medium,"For each country with orders, how many distinct customers placed orders during 2025? Show country followed by that customer count, omitting countries with no orders in that year.","SELECT customers.country, COUNT(DISTINCT orders.customer_id)
+FROM customers
+JOIN orders ON customers.id = orders.customer_id
+WHERE strftime('%Y', orders.order_date) = '2025'
+GROUP BY customers.country
+ORDER BY customers.country;","SELECT customers.country, COUNT(DISTINCT orders.customer_id)
+FROM customers
+JOIN orders ON customers.id = orders.customer_id
+WHERE strftime('%Y', orders.order_date) = '2025'
+GROUP BY customers.country
+ORDER BY customers.country;",True,correct,7702.78,313,52,7.77,
+qwen3:8b,42,test,medium,"Which products were ordered at least once from July 1 through December 31, 2024, inclusive? List each product once as product ID followed by name.","SELECT DISTINCT products.id, products.name
+FROM products
+JOIN orders ON products.id = orders.product_id
+WHERE orders.order_date BETWEEN '2024-07-01' AND '2024-12-31'","SELECT DISTINCT products.id, products.name
+FROM products
+JOIN orders ON products.id = orders.product_id
+WHERE orders.order_date BETWEEN '2024-07-01' AND '2024-12-31';",True,correct,8008.88,312,52,7.62,
+qwen3:8b,43,test,hard,"Among customers who ordered in 2025, which spent more that year than the average total spending of those customers? Spending is product price multiplied by quantity. Show customer ID, name, and total spending in 2025 without rounding.","SELECT customers.id, customers.name, SUM(products.price * orders.quantity) AS total_spending
+FROM customers
+JOIN orders ON customers.id = orders.customer_id
+JOIN products ON orders.product_id = products.id
+WHERE orders.order_date LIKE '2025%'
+GROUP BY customers.id
+HAVING SUM(products.price * orders.quantity) > (
+    SELECT AVG(total_spending)
+    FROM (
+        SELECT SUM(products.price * orders.quantity) AS total_spending
+        FROM customers
+        JOIN orders ON customers.id = orders.customer_id
+        JOIN products ON orders.product_id = products.id
+        WHERE orders.order_date LIKE '2025%'
+        GROUP BY customers.id
+    )
+)
+ORDER BY total_spending DESC;","SELECT customers.id, customers.name, SUM(products.price * orders.quantity) AS total_spending
+FROM customers
+JOIN orders ON customers.id = orders.customer_id
+JOIN products ON orders.product_id = products.id
+WHERE orders.order_date LIKE '2025%'
+GROUP BY customers.id
+HAVING SUM(products.price * orders.quantity) > (
+    SELECT AVG(total_spending)
+    FROM (
+        SELECT SUM(products.price * orders.quantity) AS total_spending
+        FROM customers
+        JOIN orders ON customers.id = orders.customer_id
+        JOIN products ON orders.product_id = products.id
+        WHERE orders.order_date LIKE '2025%'
+        GROUP BY customers.id
+    )
+)
+ORDER BY total_spending DESC;",True,correct,22081.37,327,148,7.09,
+qwen3:8b,44,test,hard,"Which products cost more than the average catalog price within their own category? Show product ID, name, category, and price, in that order.","SELECT id, name, category, price
+FROM products
+WHERE price > (
+    SELECT AVG(price)
+    FROM products AS p
+    WHERE p.category = category
+)","SELECT id, name, category, price
+FROM products
+WHERE price > (
+    SELECT AVG(price)
+    FROM products AS p
+    WHERE p.category = category
+);",False,wrong_result,5757.05,305,36,7.61,
+qwen3:8b,45,test,hard,"Which country generated the most revenue from orders in 2024? Attribute each order to its customer country and calculate revenue as product price multiplied by quantity. For equal totals, choose the country first alphabetically. Show country followed by total revenue without rounding.","SELECT country, SUM(products.price * orders.quantity) AS total_revenue
+FROM orders
+JOIN products ON orders.product_id = products.id
+JOIN customers ON orders.customer_id = customers.id
+WHERE order_date LIKE '2024%'
+GROUP BY country
+ORDER BY total_revenue DESC, country ASC;","SELECT country, SUM(products.price * orders.quantity) AS total_revenue
+FROM orders
+JOIN products ON orders.product_id = products.id
+JOIN customers ON orders.customer_id = customers.id
+WHERE order_date LIKE '2024%'
+GROUP BY country
+ORDER BY total_revenue DESC, country ASC;",False,wrong_result,9707.97,328,63,7.42,
+qwen3:8b,46,test,hard,"Among customers from Germany who have ordered, who has the highest total spending across all orders? Spending is product price multiplied by quantity. Break ties with the smallest customer ID. Show customer ID, name, and total spending without rounding.","SELECT o.customer_id, c.name, SUM(p.price * o.quantity) AS total_spending
+FROM orders o
+JOIN products p ON o.product_id = p.id
+JOIN customers c ON o.customer_id = c.id
+WHERE c.country = 'Germany'
+GROUP BY o.customer_id
+ORDER BY total_spending DESC, o.customer_id
+LIMIT 1;","SELECT o.customer_id, c.name, SUM(p.price * o.quantity) AS total_spending
+FROM orders o
+JOIN products p ON o.product_id = p.id
+JOIN customers c ON o.customer_id = c.id
+WHERE c.country = 'Germany'
+GROUP BY o.customer_id
+ORDER BY total_spending DESC, o.customer_id
+LIMIT 1;",True,correct,11564.26,322,75,7.24,
+qwen3:8b,47,test,hard,"Which product reached the most distinct customers during 2025? Count each customer ID once per product and consider only products ordered that year. If counts tie, select the smallest product ID. Show product ID, name, and distinct customer count.","SELECT p.id, p.name, COUNT(DISTINCT o.customer_id) AS distinct_customer_count
+FROM products p
+JOIN orders o ON p.id = o.product_id
+WHERE o.order_date LIKE '2025%'
+GROUP BY p.id
+ORDER BY distinct_customer_count DESC, p.id
+LIMIT 1;","SELECT p.id, p.name, COUNT(DISTINCT o.customer_id) AS distinct_customer_count
+FROM products p
+JOIN orders o ON p.id = o.product_id
+WHERE o.order_date LIKE '2025%'
+GROUP BY p.id
+ORDER BY distinct_customer_count DESC, p.id
+LIMIT 1;",True,correct,10087.61,326,66,7.43,
+qwen3:8b,48,test,hard,"Identify customers who bought at least one Electronics product and at least one Furniture product at any time. List each qualifying customer once, showing customer ID and name.","SELECT DISTINCT o.customer_id, c.name
+FROM orders o
+JOIN customers c ON o.customer_id = c.id
+JOIN products p ON o.product_id = p.id
+WHERE p.category IN ('Electronics', 'Furniture')
+GROUP BY o.customer_id
+HAVING COUNT(DISTINCT p.category) = 2;","SELECT DISTINCT o.customer_id, c.name
+FROM orders o
+JOIN customers c ON o.customer_id = c.id
+JOIN products p ON o.product_id = p.id
+WHERE p.category IN ('Electronics', 'Furniture')
+GROUP BY o.customer_id
+HAVING COUNT(DISTINCT p.category) = 2;",True,correct,10141.67,308,67,7.36,
+qwen3:8b,49,test,hard,"Which products have a total quantity sold greater than the average total quantity sold per product? Include all catalog products in the average, treating unsold products as having zero units sold. Show product ID, name, and total quantity sold.","SELECT products.id, products.name, SUM(orders.quantity) AS total_quantity_sold
+FROM products
+LEFT JOIN orders ON products.id = orders.product_id
+GROUP BY products.id
+HAVING SUM(orders.quantity) > (
+    SELECT AVG(total_quantity)
+    FROM (
+        SELECT SUM(orders.quantity) AS total_quantity
+        FROM products
+        LEFT JOIN orders ON products.id = orders.product_id
+        GROUP BY products.id
+    )
+)","SELECT products.id, products.name, SUM(orders.quantity) AS total_quantity_sold
+FROM products
+LEFT JOIN orders ON products.id = orders.product_id
+GROUP BY products.id
+HAVING SUM(orders.quantity) > (
+    SELECT AVG(total_quantity)
+    FROM (
+        SELECT SUM(orders.quantity) AS total_quantity
+        FROM products
+        LEFT JOIN orders ON products.id = orders.product_id
+        GROUP BY products.id
+    )
+);",True,correct,13599.2,322,91,7.34,
+qwen3:8b,50,test,hard,Find customers who placed orders in 2024 but none in 2025. Show each qualifying customer once as customer ID followed by name.,"SELECT customers.id, customers.name
+FROM customers
+JOIN orders ON customers.id = orders.customer_id
+WHERE orders.order_date BETWEEN '2024-01-01' AND '2024-12-31'
+AND customers.id NOT IN (
+    SELECT DISTINCT orders.customer_id
+    FROM orders
+    WHERE orders.order_date BETWEEN '2025-01-01' AND '2025-12-31'
+)","SELECT customers.id, customers.name
+FROM customers
+JOIN orders ON customers.id = orders.customer_id
+WHERE orders.order_date BETWEEN '2024-01-01' AND '2024-12-31'
+AND customers.id NOT IN (
+    SELECT DISTINCT orders.customer_id
+    FROM orders
+    WHERE orders.order_date BETWEEN '2025-01-01' AND '2025-12-31'
+);",False,wrong_result,14646.97,308,100,7.33,
